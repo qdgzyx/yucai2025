@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d598a0fc0e405a6cdad74ad7d8735a70",
+    "content-hash": "cc2ca5fecb82af8728c3c44af824df53",
     "packages": [
         {
             "name": "brick/math",
@@ -129,6 +129,54 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "ckeditor/ckeditor",
+            "version": "4.25.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ckeditor/ckeditor4-releases.git",
+                "reference": "3fa1987d35342526e4eb2e64f6ec7172561b7328"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ckeditor/ckeditor4-releases/zipball/3fa1987d35342526e4eb2e64f6ec7172561b7328",
+                "reference": "3fa1987d35342526e4eb2e64f6ec7172561b7328",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+",
+                "LGPL-2.1+",
+                "MPL-1.1+"
+            ],
+            "authors": [
+                {
+                    "name": "CKSource",
+                    "homepage": "https://cksource.com"
+                }
+            ],
+            "description": "JavaScript WYSIWYG web text editor.",
+            "homepage": "https://ckeditor.com/ckeditor-4/",
+            "keywords": [
+                "CKEditor",
+                "ckeditor4",
+                "editor",
+                "fckeditor",
+                "html",
+                "javascript",
+                "richtext",
+                "text",
+                "wysiwyg"
+            ],
+            "support": {
+                "forum": "https://stackoverflow.com/tags/ckeditor",
+                "issues": "https://github.com/ckeditor/ckeditor4/issues",
+                "source": "https://github.com/ckeditor/ckeditor4",
+                "wiki": "https://ckeditor.com/docs/ckeditor4/latest/"
+            },
+            "time": "2025-02-05T12:32:07+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3753,6 +3801,71 @@
             "time": "2025-05-14T03:32:23+00:00"
         },
         {
+            "name": "summerblue/administrator",
+            "version": "v9.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/summerblue/administrator.git",
+                "reference": "8c6d672a2b85bde15e005d15b6dd995c7d7b584f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/summerblue/administrator/zipball/8c6d672a2b85bde15e005d15b6dd995c7d7b584f",
+                "reference": "8c6d672a2b85bde15e005d15b6dd995c7d7b584f",
+                "shasum": ""
+            },
+            "require": {
+                "ckeditor/ckeditor": "4.*",
+                "laravel/framework": "9.*",
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9",
+                "phpunit/phpunit": "~5.7.12"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Frozennode\\Administrator\\AdministratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Frozennode\\Administrator": "src/"
+                },
+                "classmap": [
+                    "src/controllers"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Summer",
+                    "email": "summer@learnku.com"
+                }
+            ],
+            "description": "A database interface package for Laravel, modified!",
+            "homepage": "https://github.com/summerblue/administrator",
+            "keywords": [
+                "admin",
+                "administrator",
+                "cms",
+                "database",
+                "laravel",
+                "laravel-administrator"
+            ],
+            "support": {
+                "issues": "https://github.com/summerblue/administrator/issues",
+                "source": "https://github.com/summerblue/administrator/tree/v9.0.2"
+            },
+            "time": "2022-03-07T11:42:53+00:00"
+        },
+        {
             "name": "summerblue/laravel-active",
             "version": "9.0.0",
             "source": {
@@ -6032,6 +6145,50 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.3.0"
             },
             "time": "2024-12-21T16:25:41+00:00"
+        },
+        {
+            "name": "viacreative/sudo-su",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/viacreative/sudo-su.git",
+                "reference": "78905d0db3721a5daece6f7fcd6c6567fd00bb46"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/viacreative/sudo-su/zipball/78905d0db3721a5daece6f7fcd6c6567fd00bb46",
+                "reference": "78905d0db3721a5daece6f7fcd6c6567fd00bb46",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "VIACreative\\SudoSu\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Terry Harvey",
+                    "email": "contact@terryharvey.co.uk"
+                }
+            ],
+            "description": "A utility package for logging in as other users",
+            "keywords": [
+                "debugging",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/viacreative/sudo-su/issues",
+                "source": "https://github.com/viacreative/sudo-su/tree/master"
+            },
+            "time": "2017-03-23T16:28:08+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
