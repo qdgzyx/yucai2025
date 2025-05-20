@@ -1,18 +1,17 @@
 <?php
 
-namespace Database\Seeders;
+namespace  Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Topic;
+use App\Models\Reply;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class TopicsTableSeeder extends Seeder
+class RepliesTableSeeder extends Seeder
 {
     use WithoutModelEvents;
 
     public function run()
     {
-        Topic::factory()->count(100)->create();
-        
+        Reply::factory()->times(1000)->create();
     }
 }
