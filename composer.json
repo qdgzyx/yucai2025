@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
-        "intervention/image": "^3.11",
+        "intervention/image": "3.11",
         "laravel/framework": "^9.11",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
@@ -15,6 +15,7 @@
         "mews/purifier": "^3.4",
         "overtrue/laravel-lang": "^6.0",
         "overtrue/pinyin": "^5.3",
+        "predis/predis": "^3.0",
         "spatie/laravel-permission": "^6.18",
         "summerblue/administrator": "9.*",
         "summerblue/laravel-active": "9.*",

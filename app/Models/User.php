@@ -14,10 +14,12 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable 
 {
     use HasApiTokens, HasFactory,HasRoles;
-
+    use Traits\ActiveUserHelper;
+    use Traits\LastActivedAtHelper;
     use Notifiable {
         notify as protected laravelNotify;
     }
+
     public function notify($instance)
     {
         // 如果要通知的人是当前用户,且不是在验证邮箱，就不必通知了！
@@ -33,7 +35,7 @@ class User extends Authenticatable
         $this->laravelNotify($instance);
     }
      
-    protected $fillable = ['name','email','password','introduction','subject_id','banji_id','avatar' ];
+    protected $fillable = ['name','email','password','introduction','avatar' ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -92,5 +94,10 @@ class User extends Authenticatable
         }
 
         $this->attributes['avatar'] = $path;
+    }
+    // 在 User 模型中
+    public function getLastActivedAtAttribute($value)
+    {
+          return $value ?? $this->created_at;
     }
 }

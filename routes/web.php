@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', 'PagesController@root')->name('root');
+Route::get('/', 'TopicsController@index')->name('root');
 
 // 用户身份验证相关的路由
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
@@ -38,3 +38,8 @@ Route::resource('notifications', 'NotificationsController', ['only' => ['index']
 Route::post('upload_image', 'TopicsController@uploadImage')->name('topics.upload_image');
 Route::get('topics/{topic}/{slug?}', 'TopicsController@show')->name('topics.show');
 Route::resource('replies', 'RepliesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+
+Route::get('permission-denied', 'PagesController@permissionDenied')->name('permission-denied');
+Route::resource('grades', 'GradesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('banjis', 'BanjisController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('reports', 'ReportsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);

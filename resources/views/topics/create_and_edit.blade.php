@@ -29,11 +29,11 @@
 
               @include('shared._error')
 
-              <div class="form-group">
+              <div class="mb-3">
                 <input class="form-control" type="text" name="title" value="{{ old('title', $topic->title ) }}" placeholder="请填写标题" required />
               </div>
 
-              <div class="form-group">
+              <div class="mb-3">
                 <select class="form-control" name="category_id" required>
                   <option value="" hidden disabled {{ $topic->id ? '' : 'selected' }}>请选择分类</option>
                     @foreach ($categories as $value)
@@ -44,7 +44,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="mb-3">
                 <textarea name="body" class="form-control" id="editor" rows="6" placeholder="请填入至少三个字符的内容。" required>{{ old('body', $topic->body ) }}</textarea>
               </div>
 
@@ -57,14 +57,15 @@
     </div>
   </div>
 
-@endsection
+
 
 @section('styles')
   <link rel="stylesheet" type="text/css" href="{{ asset('css/simditor.css') }}">
 @stop
 
 @section('scripts')
-  <script type="text/javascript" src="{{ asset('js/module.js') }}"></script>
+ <script type="text/javascript" src="{{ asset('js/jquery.min.js') }}"></script> 
+<script type="text/javascript" src="{{ asset('js/module.js') }}"></script>
   <script type="text/javascript" src="{{ asset('js/hotkeys.js') }}"></script>
   <script type="text/javascript" src="{{ asset('js/uploader.js') }}"></script>
   <script type="text/javascript" src="{{ asset('js/simditor.js') }}"></script>

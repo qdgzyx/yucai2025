@@ -15,7 +15,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // $schedule->command('inspire')
+        //          ->hourly();
+        // 每隔一个小时执行一遍
+        $schedule->command('yucai:calculate-active-user')->hourly();
+        // 每日零时执行一次
+        $schedule->command('yucai:sync-user-actived-at')->dailyAt('00:00');
     }
 
     /**

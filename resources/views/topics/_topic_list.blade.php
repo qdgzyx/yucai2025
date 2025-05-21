@@ -1,20 +1,20 @@
 @if (count($topics))
   <ul class="list-unstyled">
     @foreach ($topics as $topic)
-      <li class="media">
-        <div class="media-left">
+      <li class="d-flex">
+        <div class="">
           <a href="{{ route('users.show', [$topic->user_id]) }}">
             <img class="media-object img-thumbnail mr-3" style="width: 52px; height: 52px;" src="{{ $topic->user->avatar }}" title="{{ $topic->user->name }}">
           </a>
         </div>
 
-        <div class="media-body">
+        <div class="flex-grow-1 ms-2">
 
-          <div class="media-heading mt-0 mb-1">
+          <div class="mt-0 mb-1">
             <a href="{{ $topic->link() }}" title="{{ $topic->title }}">
               {{ $topic->title }}
             </a>
-            <a class="float-right" href="{{ $topic->link() }}">
+            <a class="float-end" href="{{ $topic->link() }}">
               <span class="badge badge-secondary badge-pill"> {{ $topic->reply_count }} </span>
             </a>
           </div>

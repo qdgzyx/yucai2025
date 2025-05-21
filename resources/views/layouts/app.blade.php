@@ -9,9 +9,9 @@
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>@yield('title', 'LaraBBS') - {{ setting('site_name', 'Laravel 进阶教程') }}</title>
-  <meta name="description" content="@yield('description', setting('seo_description', 'LaraBBS 爱好者社区。'))" />
-  <meta name="keyword" content="@yield('keyword', setting('seo_keyword', 'LaraBBS,社区,论坛,开发者论坛'))" />
+  <title>@yield('title', 'YUCAI') - {{ setting('site_name', '育才智能管理') }}</title>
+  <meta name="description" content="@yield('description', setting('seo_description' ))" />
+  <meta name="keyword" content="@yield('keyword', setting('seo_keyword' ))" />
 
   <!-- Styles -->
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
@@ -36,9 +36,9 @@
     @include('layouts._footer')
   </div>
 
-  @if (app()->isLocal())
+  <!-- @if (app()->isLocal())
     @include('sudosu::user-selector')
-  @endif
+  @endif -->
 
   <!-- Scripts -->
   <script src="{{ mix('js/app.js') }}"></script>
