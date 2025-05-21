@@ -100,4 +100,8 @@ class User extends Authenticatable
     {
           return $value ?? $this->created_at;
     }
+    public function banji() 
+    {
+        return $this->belongsTo(Banji::class, 'banji_id'); // 假设外键为 banji_id
+    }
 }

@@ -1,88 +1,137 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            @isset($report->id)
+              {{ $report->cla->grade->department->name }} - {{ $report->cla->name }} 考勤修正
+            @else
+              新建考勤报告
+            @endisset
+          </h4>
+        </div>
 
-<div class="container">
-  <div class="col-md-10 offset-md-1">
-    <div class="card ">
+        <div class="card-body">
+          <form method="POST" 
+                action="{{ $report->id ? route('reports.update', $report->id) : route('reports.store') }}"
+                class="needs-validation" novalidate>
+            @csrf
+            @isset($report->id) @method('PUT') @endisset
 
-      <div class="card-header">
-        <h1>
-          Report /
-          @if($report->id)
-            Edit #{{ $report->id }}
-          @else
-            Create
-          @endif
-        </h1>
-      </div>
+            <!-- 核心字段 -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label required">报告日期</label>
+                <input type="date" name="date" class="form-control"
+                       value="{{ old('date', $report->date ?? now()->toDateString()) }}"
+                       max="{{ now()->toDateString() }}" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label required">所属班级</label>
+                
+              </div>
+            </div>
 
-      <div class="card-body">
-        @if($report->id)
-          <form action="{{ route('reports.update', $report->id) }}" method="POST" accept-charset="UTF-8">
-          <input type="hidden" name="_method" value="PUT">
-        @else
-          <form action="{{ route('reports.store') }}" method="POST" accept-charset="UTF-8">
-        @endif
-
-          @include('common.error')
-
-          <input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-          
-                <div class="mb-3">
-                    <label for="date-field">Date</label>
-                    <input class="form-control" type="text" name="date" id="date-field" value="{{ old('date', $report->date ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="banji_id-field">Banji_id</label>
-                    <input class="form-control" type="text" name="banji_id" id="banji_id-field" value="{{ old('banji_id', $report->banji_id ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="total_expected-field">Total_expected</label>
-                    <input class="form-control" type="text" name="total_expected" id="total_expected-field" value="{{ old('total_expected', $report->total_expected ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="total_actual-field">Total_actual</label>
-                    <input class="form-control" type="text" name="total_actual" id="total_actual-field" value="{{ old('total_actual', $report->total_actual ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="sick_leave_count-field">Sick_leave_count</label>
-                    <input class="form-control" type="text" name="sick_leave_count" id="sick_leave_count-field" value="{{ old('sick_leave_count', $report->sick_leave_count ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="sick_list-field">Sick_list</label>
-                    <input class="form-control" type="text" name="sick_list" id="sick_list-field" value="{{ old('sick_list', $report->sick_list ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="personal_leave_count-field">Personal_leave_count</label>
-                    <input class="form-control" type="text" name="personal_leave_count" id="personal_leave_count-field" value="{{ old('personal_leave_count', $report->personal_leave_count ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="personal_list-field">Personal_list</label>
-                    <input class="form-control" type="text" name="personal_list" id="personal_list-field" value="{{ old('personal_list', $report->personal_list ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="absent_count-field">Absent_count</label>
-                    <input class="form-control" type="text" name="absent_count" id="absent_count-field" value="{{ old('absent_count', $report->absent_count ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="absent_list-field">Absent_list</label>
-                    <input class="form-control" type="text" name="absent_list" id="absent_list-field" value="{{ old('absent_list', $report->absent_list ) }}" />
-                </div> 
-                <div class="mb-3">
-                    <label for="report_status-field">Report_status</label>
-                    <input class="form-control" type="text" name="report_status" id="report_status-field" value="{{ old('report_status', $report->report_status ) }}" />
+            <!-- 人数统计 -->
+            <div class="alert alert-info mb-4">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label required">应到人数</label>
+                  <input type="number" name="total_expected" class="form-control"
+                         value="{{ old('total_expected', $report->total_expected ?? $currentBanji->student_count) }}"
+                         required>
                 </div>
+                <div class="col-md-4">
+                  <label class="form-label required">实到人数</label>
+                  <input type="number" name="total_actual" class="form-control"
+                         onkeyup="calculateAbsent()" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">系统计算缺勤</label>
+                  <input type="number" name="absent_count" class="form-control bg-light" readonly>
+                </div>
+              </div>
+            </div>
 
-          <div class="well well-sm">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a class="btn btn-link float-xs-right" href="{{ route('reports.index') }}"> <- Back</a>
-          </div>
-        </form>
+            <!-- 请假名单输入 -->
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label">病假名单</label>
+                <div class="input-group tag-input">
+                  <input type="text" class="form-control" 
+                         id="sick_list_input" 
+                         placeholder="输入学生姓名，用逗号分隔"
+                         value="{{ old('sick_list', $report->sick_list ? implode(',', json_decode($report->sick_list)) : '') }}">
+                  <input type="hidden" name="sick_list" id="sick_list">
+                  <input type="hidden" name="sick_leave_count" id="sick_count">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">事假名单</label>
+                <div class="input-group tag-input">
+                  <input type="text" class="form-control"
+                         id="personal_list_input"
+                         placeholder="输入学生姓名，用逗号分隔"
+                         value="{{ old('personal_list', $report->personal_list ? implode(',', json_decode($report->personal_list)) : '') }}">
+                  <input type="hidden" name="personal_list" id="personal_list">
+                  <input type="hidden" name="personal_leave_count" id="personal_count">
+                </div>
+              </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+              <button type="submit" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-save me-2"></i>保存报告
+              </button>
+              <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary btn-lg px-5">
+                <i class="bi bi-arrow-left me-2"></i>返回列表
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </div>
+@endsection
 
+@section('scripts')
+<script>
+// 自动计算缺勤人数
+function calculateAbsent() {
+  const expected = parseInt(document.querySelector('[name="total_expected"]').value) || 0
+  const actual = parseInt(document.querySelector('[name="total_actual"]').value) || 0
+  document.querySelector('[name="absent_count"]').value = expected - actual
+}
+
+// 处理名单输入
+document.querySelectorAll('.tag-input input[type="text"]').forEach(input => {
+  input.addEventListener('input', function() {
+    const names = this.value.split(/[,，]/g).filter(n => n.trim())
+    const hiddenField = this.parentElement.querySelector('input[type="hidden"]')
+    const countField = this.parentElement.querySelector('[id$="_count"]')
+    
+    // 存储为JSON数组
+    hiddenField.value = JSON.stringify(names)
+    countField.value = names.length
+  })
+})
+
+// 初始化时设置默认值
+document.addEventListener('DOMContentLoaded', () => {
+  ['sick', 'personal'].forEach(type => {
+    const input = document.getElementById(`${type}_list_input`)
+    const hidden = document.getElementById(`${type}_list`)
+    if (hidden.value) {
+      input.value = JSON.parse(hidden.value).join(',')
+    }
+  })
+})
+</script>
 @endsection

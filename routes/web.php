@@ -43,3 +43,13 @@ Route::get('permission-denied', 'PagesController@permissionDenied')->name('permi
 Route::resource('grades', 'GradesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('banjis', 'BanjisController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('reports', 'ReportsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::get('/report/summary', [App\Http\Controllers\ReportsController::class, 'summary']);
+// 分年级出勤汇总
+Route::get('/report/summary/{grade}', [App\Http\Controllers\ReportsController::class, 'summaryByGrade'])
+    ->whereNumber('grade') // 限制为数字
+    ->name('reports.summary.grade');
+
+// 分年级导出Excel
+Route::get('/report/export/{grade}', [App\Http\Controllers\ReportsController::class, 'exportByGrade'])
+    ->whereNumber('grade')
+    ->name('reports.export.grade');

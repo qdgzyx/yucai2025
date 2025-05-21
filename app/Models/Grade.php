@@ -9,4 +9,9 @@ class Grade extends Model
     use HasFactory;
     
     protected $fillable = ['name', 'year'];
+    
+    public function banji()
+    {
+        return $this->hasMany(Banji::class);
+    }
 }
