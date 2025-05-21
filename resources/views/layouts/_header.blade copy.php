@@ -10,12 +10,12 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <!-- Left Side Of Navbar -->
-        <ul class="navbar-nav flex-grow-1">
-          <li class="nav-item {{ active_class(if_route('topics.index')) }}"><a class="nav-link" href="{{ route('reports.index') }}">上报数据</a></li>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item {{ active_class(if_route('topics.index')) }}"><a class="nav-link" href="{{ route('topics.index') }}">通知公告</a></li>
           <li class="nav-item {{ category_nav_active(1) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 1) }}">七年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(2) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 2) }}">八年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(3) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 3) }}">九年级出勤</a></li>
-          <li class="nav-item {{ category_nav_active(4) }}"><a class="nav-link" href="{{ route('reports.create') }}">每日上报</a></li>
+          <li class="nav-item {{ category_nav_active(4) }}"><a class="nav-link" href="{{ route('categories.show', 4) }}">作业公示</a></li>
         </ul>
 
         <!-- Right Side Of Navbar -->
@@ -25,8 +25,8 @@
             <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">登录</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">注册</a></li>
           @else
-            <li class="nav-item ">
-              <a class="nav-link mt-1 mr-3 font-weight-bold" href="{{ route('reports.create') }}">
+            <li class="nav-item">
+              <a class="nav-link mt-1 mr-3 font-weight-bold" href="{{ route('topics.create') }}">
                 <i class="fa fa-plus"></i>
               </a>
             </li>
@@ -36,23 +36,23 @@
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <img src="{{ Auth::user()->avatar }}" class="img-responsive img-circle" width="30px" height="30px">
                 {{ Auth::user()->name }}
               </a>
 
-               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              @can('manage_contents')
-                <a class="dropdown-item" href="{{ url(config('administrator.uri')) }}">
-                  <i class="fas fa-tachometer-alt mr-2"></i>
-                  管理后台
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                @can('manage_contents')
+                  <a class="dropdown-item" href="{{ url(config('administrator.uri')) }}">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    管理后台
+                  </a>
+                  <div class="dropdown-divider"></div>
+                @endcan
+                <a class="dropdown-item" href="{{ route('users.show', Auth::id()) }}">
+                  <i class="far fa-user mr-2"></i>
+                  个人中心
                 </a>
-                <div class="dropdown-divider"></div>
-              @endcan
-              <a class="dropdown-item" href="{{ route('users.show', Auth::id()) }}">
-                <i class="far fa-user mr-2"></i>
-                个人中心
-              </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{{ route('users.edit', Auth::id()) }}">
                   <i class="far fa-edit mr-2"></i>

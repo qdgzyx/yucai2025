@@ -4,17 +4,17 @@
 <div class="container">
   <div class="col-md-12">
     <div class="card">
-      <div class="card-header bg-primary text-white">
+      <div class="card-header bg-secondary text-white">
   <div class="d-flex align-items-center justify-content-between">
-    {{-- 主标题 --}}
+   
     <div class="flex-grow-1 text-center">
       <h3 class="m-0 position-relative" style="left: 1.2rem"> {{-- 视觉平衡微调 --}}
         {{ $currentGrade }}出勤汇总表
       </h3>
     </div>
     
-    {{-- 日期显示 --}}
-    <small class="text-nowrap" style="font-size:0.9em; opacity:0.9">
+    
+    <small class="text-nowrap" style="font-size:1em; opacity:1">
       <i class="fas fa-calendar-alt mr-1"></i>{{ $today }}
     </small>
   </div>
@@ -84,7 +84,7 @@
         </table>
 
         <div class="mt-3">
-          <a href="{{ route('reports.export.grade', ['grade' => $grade_id]) }}" class="btn btn-success">
+          <a href="{{ route('reports.export.grade', ['grade' => $grade_id]) }}" class="btn btn-secondary">
             <i class="fas fa-file-excel"></i> 导出{{ $currentGrade }}Excel
           </a>
         </div>

@@ -6,8 +6,8 @@
     <div class="card ">
       <div class="card-header">
         <h1>
-          Report
-          <a class="btn btn-success float-xs-right" href="{{ route('reports.create') }}">Create</a>
+          出勤报告表
+          <a class="btn btn-success float-xs-right" href="{{ route('reports.create') }}">新报</a>
         </h1>
       </div>
 
@@ -16,7 +16,7 @@
           <table class="table table-sm table-striped">
             <thead>
               <tr>
-                <th class="text-xs-center">#</th>
+                <th class="text-xs-center">序号</th>
                <th>日期</th>
     <th>班级</th>
     <th>应到人数</th>
@@ -44,20 +44,24 @@
                  <td>{{$report->absent_count}}</td>  <td>{{$report->report_status}}</td>
 
                 <td class="text-xs-right">
-                  <a class="btn btn-sm btn-primary" href="{{ route('reports.show', $report->id) }}">
-                    V
-                  </a>
+                @can('update', $report)
+            <div class="operate">
+               <a href="{{ route('reports.edit', $report->id) }}" class="btn btn-outline-secondary btn-sm" role="button">
+                <i class="far fa-edit"></i> 编辑
+              </a>
+              <form action="{{ route('reports.destroy', $report->id) }}" method="post"
+                    style="display: inline-block;"
+                    onsubmit="return confirm('您确定要删除吗？');">
+                {{ csrf_field() }}
+                {{ method_field('DELETE') }}
+                <button type="submit" class="btn btn-outline-warning btn-sm">
+                  <i class="far fa-trash-alt"></i> 删除
+                </button>
+              </form>
+            </div>
+          @endcan  
 
-                  <a class="btn btn-sm btn-warning" href="{{ route('reports.edit', $report->id) }}">
-                    E
-                  </a>
 
-                  <form action="{{ route('reports.destroy', $report->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete? Are you sure?');">
-                    {{csrf_field()}}
-                    <input type="hidden" name="_method" value="DELETE">
-
-                    <button type="submit" class="btn btn-sm btn-danger">D </button>
-                  </form>
                 </td>
               </tr>
               @endforeach
@@ -65,7 +69,7 @@
           </table>
           {!! $reports->render() !!}
         @else
-          <h3 class="text-xs-center alert alert-info">Empty!</h3>
+          <h3 class="text-xs-center alert alert-info">无数据！</h3>
         @endif
       </div>
     </div>

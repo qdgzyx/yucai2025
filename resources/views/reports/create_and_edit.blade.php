@@ -5,7 +5,7 @@
   <div class="row justify-content-center">
     <div class="col-md-10">
       <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-secondary text-white">
           <h4 class="mb-0">
             @isset($report->id)
               {{ $report->cla->grade->department->name }} - {{ $report->cla->name }} 考勤修正
@@ -32,7 +32,9 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label required">所属班级</label>
-                
+                <div class="form-control form-control-plaintext bg-light rounded">
+                   {{ $currentBanji->name ?? '未选择班级' }}
+                </div>
               </div>
             </div>
 
@@ -87,10 +89,10 @@
             <!-- 提交按钮 -->
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
               <button type="submit" class="btn btn-primary btn-lg px-5">
-                <i class="bi bi-save me-2"></i>保存报告
+                <i class="bi bi-save me-2"></i>上报
               </button>
               <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary btn-lg px-5">
-                <i class="bi bi-arrow-left me-2"></i>返回列表
+                <i class="bi bi-arrow-left me-2"></i>返回
               </a>
             </div>
           </form>

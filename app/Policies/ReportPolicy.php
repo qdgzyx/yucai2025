@@ -9,12 +9,11 @@ class ReportPolicy extends Policy
 {
     public function update(User $user, Report $report)
     {
-        // return $report->user_id == $user->id;
-        return true;
+        return $user->isAuthorOf($report);
     }
 
     public function destroy(User $user, Report $report)
     {
-        return true;
+        return $user->isAuthorOf($report);
     }
 }
