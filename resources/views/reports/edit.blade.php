@@ -5,14 +5,10 @@
   <div class="row justify-content-center">
     <div class="col-md-10">
       <div class="card shadow-lg">
-        <div class="card-header ">
+        <div class="card-header bg-secondary text-white">
           <h4 class="mb-0">
-            @isset($report->id)
-              {{ $report->cla->grade->department->name }} - {{ $report->cla->name }} 考勤修正
-            @else
-              新建考勤报告
-            @endisset
-          </h4>
+            考勤修正
+                </h4>
         </div>
 
         <div class="card-body">
@@ -49,7 +45,7 @@
                 </div>
                 <div class="col-md-4">
                   <label class="form-label required">实到人数</label>
-                  <input type="number" name="total_actual" class="form-control"
+                  <input type="number" name="total_actual" class="form-control"  value="{{ old('total_actual', $report->total_actual) }}"
                          onkeyup="calculateAbsent()" required>
                 </div>
                 <div class="col-md-4">

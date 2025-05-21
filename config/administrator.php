@@ -44,6 +44,11 @@ return array(
             'roles',
             'permissions',
         ],
+        '出勤管理' => [
+            'grades',
+            'banjis',
+            'reports',
+        ],
         '内容管理' => [
             'categories',
             'topics',

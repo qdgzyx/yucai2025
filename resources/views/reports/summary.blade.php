@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="container">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header bg-secondary text-white">
+  <div class="col-md-10 offset-md-1">
+    <div class="card ">
+      <div class="card-header">
   <div class="d-flex align-items-center justify-content-between">
    
     <div class="flex-grow-1 text-center">
@@ -15,7 +15,7 @@
     
     
     <small class="text-nowrap" style="font-size:1em; opacity:1">
-      <i class="fas fa-calendar-alt mr-1"></i>{{ $today }}
+      <i class="fas fa-calendar-alt mr-1"></i>      {{ $today }}
     </small>
   </div>
 </div>

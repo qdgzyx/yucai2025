@@ -2,7 +2,7 @@
   <div class="container">
       <!-- Branding Image -->
       <a class="navbar-brand " href="{{ url('/') }}">
-      YUCAI
+      育才中学出勤管理系统
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -11,7 +11,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <!-- Left Side Of Navbar -->
         <ul class="navbar-nav flex-grow-1">
-          <li class="nav-item {{ active_class(if_route('topics.index')) }}"><a class="nav-link" href="{{ route('reports.index') }}">上报数据</a></li>
+          <li class="nav-item {{ active_class(if_route('topics.index')) }}"><a class="nav-link" href="{{ route('reports.index') }}">数据汇总</a></li>
           <li class="nav-item {{ category_nav_active(1) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 1) }}">七年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(2) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 2) }}">八年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(3) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 3) }}">九年级出勤</a></li>

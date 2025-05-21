@@ -10,10 +10,14 @@ class Banji extends Model
     
     protected $fillable = ['grade_id', 'name', 'student_count', 'user_id'];
     
-    public function users()
+    public function user()
     {
-    return $this->hasMany(User::class, 'banji_id');
+        return $this->belongsTo(User::class);
     }
+    // public function users()
+    // {
+    // return $this->hasMany(User::class, 'banji_id');
+    // }
     public function grade()
     {
         return $this->belongsTo(Grade::class);

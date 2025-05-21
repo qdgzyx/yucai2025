@@ -66,9 +66,12 @@ public function store(ReportRequest $request)
 
 	public function edit(Report $report) // 路由模型绑定
 {
-    return view('reports.create_and_edit', [
+    $this->authorize('update', $report);
+    $currentBanji = Auth::user()->banji;
+    return view('reports.edit', [
         'report' => $report,
-        'banjis' => Banji::all()
+        'banjis' => Banji::all(),
+        'currentBanji' => $currentBanji
     ]);
 }
 

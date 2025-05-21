@@ -2,13 +2,13 @@
 
 @section('content')
 <div class="container">
-  <div class="col-md-10 offset-md-1">
+  <div class="col-md-10 offset-md-1 ">
     <div class="card ">
       <div class="card-header">
-        <h1>
-          出勤报告表
-          <a class="btn btn-success float-xs-right" href="{{ route('reports.create') }}">新报</a>
-        </h1>
+        <h5>
+          出勤报告表 </h5>
+           <!-- <a class="btn btn-success float-xs-right" href="{{ route('reports.create') }}">新报</a> -->
+       
       </div>
 
       <div class="card-body">
@@ -16,7 +16,7 @@
           <table class="table table-sm table-striped">
             <thead>
               <tr>
-                <th class="text-xs-center">序号</th>
+               
                <th>日期</th>
     <th>班级</th>
     <th>应到人数</th>
@@ -35,9 +35,9 @@
             <tbody>
               @foreach($reports as $report)
               <tr>
-                <td class="text-xs-center"><strong>{{$report->id}}</strong></td>
+                
 
-                <td>{{$report->date}}</td> <td>{{$report->banji_id}}</td> 
+                <td>{{$report->date}}</td> <td>{{$report->banji->name}}</td> 
                 <td>{{$report->total_expected}}</td> <td>{{$report->total_actual}}</td>
                  <td>{{$report->sick_leave_count}}</td> <td>{{$report->sick_list}}</td> 
                  <td>{{$report->personal_leave_count}}</td> <td>{{$report->personal_list}}</td> 
