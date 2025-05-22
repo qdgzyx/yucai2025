@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\UserRequest;
 use App\Handlers\ImageUploadHandler;
 class UsersController extends Controller
@@ -40,6 +42,19 @@ class UsersController extends Controller
 
         $user->update($data);
         return redirect()->route('users.show', $user->id)->with('success', '个人资料更新成功！');
+    }
+    public function showForm()
+    {
+        return view('users.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+
+        Excel::import(new UsersImport, $request->file('file'));
+
+        return back()->with('success', '数据导入成功！');
     }
 
 }

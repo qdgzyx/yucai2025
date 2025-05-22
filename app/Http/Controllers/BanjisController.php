@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Banji;
 use Illuminate\Http\Request;
+use App\Imports\BanjisImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BanjiRequest;
 
@@ -57,4 +59,17 @@ class BanjisController extends Controller
 
 		return redirect()->route('banjis.index')->with('message', 'Deleted successfully.');
 	}
+	public function showForm()
+    {
+        return view('banjis.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
+
+        Excel::import(new BanjisImport, $request->file('file'));
+
+        return back()->with('success', '数据导入成功！');
+    }
 }

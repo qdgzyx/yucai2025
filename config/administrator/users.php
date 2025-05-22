@@ -106,4 +106,23 @@ return [
             'title' => '邮箱',
         ],
     ],
+    // 'custom_actions' => [
+    //     [
+    //         'type' => 'html',
+    //         'content' => '
+    //             <form action="'.route('users.import').'" method="POST" enctype="multipart/form-data" class="mb-4 border p-3">
+    //                 '.csrf_field().'
+    //                 <h4 class="mb-3">批量导入用户</h4>
+    //                 <div class="input-group">
+    //                     <input type="file" name="file" class="form-control" 
+    //                         accept=".xlsx,.xls,.csv" required>
+    //                     <button type="submit" class="btn btn-primary">
+    //                         <i class="bi bi-upload"></i> 上传并导入
+    //                     </button>
+    //                 </div>
+    //                 <small class="text-muted mt-2 d-block">支持格式：Excel 2007+ (.xlsx), Excel 97-2003 (.xls), CSV</small>
+    //             </form>
+    //         '
+    //     ]
+    // ],
 ];
