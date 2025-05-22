@@ -14,9 +14,22 @@
     </div>
     
     
-    <small class="text-nowrap" style="font-size:1em; opacity:1">
-      <i class="fas fa-calendar-alt mr-1"></i>      {{ $today }}
-    </small>
+    <form method="GET" action="{{ request()->url() }}" class="d-flex align-items-center">
+         @csrf
+    <div class="input-group date-picker-group">
+            <input type="date" 
+                   name="date" 
+                   class="form-control"
+                   value="{{ $selectedDate ?? $today }}"
+                   max="{{ now()->toDateString() }}"
+                   style="width: 160px">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </form>
   </div>
 </div>
 
@@ -84,7 +97,8 @@
         </table>
 
         <div class="mt-3">
-          <a href="{{ route('reports.export.grade', ['grade' => $grade_id]) }}" class="btn btn-secondary">
+          <a href="{{ route('reports.export.grade', ['grade' => $grade_id,
+    'date' => $selectedDate ?? $today]) }}" class="btn btn-secondary">
             <i class="fas fa-file-excel"></i> 导出{{ $currentGrade }}Excel
           </a>
         </div>
@@ -99,6 +113,23 @@
 </div>
 
 @section('scripts')
+{{-- 在@section('scripts')中添加 --}}
+<script>
+document.querySelector('input[name="date"]').addEventListener('change', function() {
+    this.closest('form').submit();
+});
+</script>
+<script>
+document.querySelector('form').addEventListener('submit', function() {
+    this.querySelector('button').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+});
+</script>
+<script>
+function setDate(date) {
+    document.querySelector('input[name="date"]').value = date;
+    document.querySelector('form').submit();
+}
+</script>
 <script src="{{ asset('js/chart.min.js') }}"></script>
 <script>
 new Chart(document.getElementById('attendanceChart'), {
@@ -135,12 +166,13 @@ new Chart(document.getElementById('attendanceChart'), {
 });
 </script>
 <style>
-.grade-header td {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
+<style>
+/* 优化样式表 */
+.bg-success-light { background-color: #dff0d8 !important; }
+.bg-warning-light { background-color: #fcf8e3 !important; }
+.table-responsive { min-height: 400px; }
+#attendanceChart { border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+</style>
 </style>
 @endsection
 @endsection

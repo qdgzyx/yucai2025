@@ -16,7 +16,7 @@ class ReportsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index', 'show','summary']]);
+        $this->middleware('auth', ['except' => ['index', 'show']]);
     }
 
 	public function index()
@@ -152,6 +152,10 @@ public function store(ReportRequest $request)
 
     public function summaryByGrade($grade_id)
     {
+    //    $this->authorize('summaryByGrade', $grade_id);
+        $selectedDate = request()->validate([
+        'date' => 'nullable|date|before_or_equal:today'
+    ])['date'] ?? now()->toDateString();
         // 获取年级信息
         $grade = Grade::findOrFail($grade_id);
         
@@ -161,8 +165,8 @@ public function store(ReportRequest $request)
             ->get();
 
         // 获取已提交的出勤数据
-        $banjis = Report::whereHas('banji', function($query) use ($grade_id) {
-                $query->where('grade_id', $grade_id);
+        $banjis = Report::whereHas('banji', function($query) use ($grade_id, $selectedDate) {
+                $query->where('grade_id', $grade_id)->whereDate('created_at', $selectedDate);
             })
             ->with('banji')
             ->get();
@@ -180,6 +184,7 @@ public function store(ReportRequest $request)
             'allBanji' => $allBanji,
             'banjis' => $banjis,
             'totals' => $totals,
+            'selectedDate' => $selectedDate,
             'grade_id' => $grade_id,
             'today' => now()->format('Y-m-d'),
             'currentGrade' => $grade->name
