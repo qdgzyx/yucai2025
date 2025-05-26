@@ -41,7 +41,7 @@ Route::resource('replies', 'RepliesController', ['only' => ['index', 'show', 'cr
 
 Route::get('permission-denied', 'PagesController@permissionDenied')->name('permission-denied');
 Route::resource('grades', 'GradesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
-Route::resource('banjis', 'BanjisController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('banjis', 'BanjisController', ['only' => ['index', 'show','assignmentshow', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('reports', 'ReportsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::get('/report/summary', [App\Http\Controllers\ReportsController::class, 'summary']);
 // 分年级出勤汇总
@@ -61,3 +61,15 @@ Route::post('/banji/import', [App\Http\Controllers\BanjisController::class, 'imp
 Route::get('/user/import', [App\Http\Controllers\UsersController::class, 'showForm'])->name('user.import');
 Route::post('/user/import', [App\Http\Controllers\UsersController::class, 'import'])->middleware('auth');;
 
+
+Route::resource('subjects', 'SubjectsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('assignments', 'AssignmentsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+
+// 带日期参数的班级作业展示路由
+Route::get('/banji/{banji}/assignments', [App\Http\Controllers\AssignmentsController::class, 'show'])
+     ->name('banjis.assignments')->middleware('auth');
+
+Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class)
+     ->middleware('auth');
+// Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class)
+//      ->parameters(['teacher-banji-subjects' => 'id']);

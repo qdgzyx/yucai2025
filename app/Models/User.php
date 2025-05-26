@@ -96,12 +96,19 @@ class User extends Authenticatable
         $this->attributes['avatar'] = $path;
     }
     // 在 User 模型中
+    
     public function getLastActivedAtAttribute($value)
     {
           return $value ?? $this->created_at;
     }
+    
     public function banji() 
     {
-        return $this->belongsTo(Banji::class, 'banji_id'); // 假设外键为 banji_id
+        return $this->belongsTo(Banji::class, 'banji_id'); 
+    }
+    
+    public function taughtSubjects() {
+        return $this->belongsToMany(Subject::class, 'teacher_banji_subject')
+            ->withPivot(['banji_id']); 
     }
 }

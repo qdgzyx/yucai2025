@@ -27,4 +27,12 @@ class Banji extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+    
+    public function assignments() {
+        return $this->belongsToMany(Assignment::class)->withTimestamps();
+    }
+    
+    public function subjects() {
+        return $this->belongsToMany(Subject::class);
+    }
 }

@@ -40,12 +40,9 @@
     @include('sudosu::user-selector')
   @endif
 
-  <!-- Scripts -->
+  
   <script src="{{ mix('js/app.js') }}"></script>
-<!-- 在 @section('scripts') 之前加载 -->
- <!-- <script type="text/javascript" src="{{ asset('js/jquery.min.js') }}"></script> 
-<script type="text/javascript" src="{{ asset('js/popper.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script> -->
+
  @yield('scripts')
 </body>
 

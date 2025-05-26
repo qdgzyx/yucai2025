@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Subject;
 use App\Models\Banji;
 use Illuminate\Http\Request;
 use App\Imports\BanjisImport;
@@ -13,7 +13,7 @@ class BanjisController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index', 'show']]);
+        $this->middleware('auth', ['except' => ['index', 'show', 'assignmentshow']]);
     }
 
 	public function index()
@@ -26,7 +26,15 @@ class BanjisController extends Controller
     {
         return view('banjis.show', compact('banji'));
     }
-
+	public function assignmentshow(Banji $banji) { 
+        $assignments = $banji->assignments()
+            ->with(['subject', 'teacher'])
+            ->active()
+            ->get()
+            ->groupBy('subject.name');
+            
+        return view('banjis.assignmentshow', compact('banji', 'assignments'));
+    }
 	public function create(Banji $banji)
 	{
 		return view('banjis.create_and_edit', compact('banji'));
