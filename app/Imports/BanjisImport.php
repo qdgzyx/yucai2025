@@ -5,6 +5,8 @@ namespace App\Imports;
 use App\Models\Banji;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow; // 处理表头
+use Carbon\Carbon; // 新增：引入 Carbon 类
+
 class BanjisImport implements ToModel, WithHeadingRow
 {
     /**

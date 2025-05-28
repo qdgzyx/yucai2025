@@ -12,11 +12,12 @@
         <!-- Left Side Of Navbar -->
         <ul class="navbar-nav flex-grow-1">
           <li class="nav-item {{ active_class(if_route('reports.index')) }}"><a class="nav-link" href="{{ route('reports.index') }}">数据汇总</a></li>
+          <li class="nav-item {{ active_class(if_route('quantify.display')) }}"><a class="nav-link" href="{{ route('quantify.display') }}">量化公示</a></li>
           <li class="nav-item {{ category_nav_active(1) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 1) }}">七年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(2) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 2) }}">八年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(3) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 3) }}">九年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(4) }}"><a class="nav-link" href="{{ route('reports.create') }}">每日上报</a></li>
-         <li class="nav-item {{ category_nav_active(5) }}">
+          <li class="nav-item {{ category_nav_active(5) }}">
             <a class="nav-link" href="{{ route('banjis.assignments', ['banji' => Auth::user()->banji_id ?? 1]) }}">作业清单</a>
           </li>
         </ul>
@@ -62,17 +63,14 @@
                   编辑资料
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" id="logout" href="#">
-                  <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('您确定要退出吗？');">
-                    {{ csrf_field() }}
-                    <button class="btn btn-block btn-danger" type="submit" name="button">退出</button>
-                  </form>
+                <a class="dropdown-item" href="{{ route('logout') }}" onclick="return confirm('您确定要退出吗？')">
+                  <i class="fas fa-sign-out-alt mr-2"></i>
+                  退出
                 </a>
               </div>
-
           </li>
           @endguest
       </ul>
       </div>
   </div>
-  </nav>
+</nav>

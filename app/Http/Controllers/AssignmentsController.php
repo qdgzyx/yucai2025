@@ -20,20 +20,43 @@ class AssignmentsController extends Controller
 	// {
     //     $subjects = Subject::all();
     //     $banjis = Banji::where('user_id', auth()->id())->get(); // 仅显示当前教师管理的班级
-    //     return view('assignments.create', compact('subjects', 'banjis','assignment'));
-    // }
 	public function create()
-	{
-		$assignment = new Assignment(); 
-        $teacher = auth()->user(); 
-    	$subjects = $teacher->taughtSubjects()
-    ->with(['banjis' => function($query) use ($teacher) {
-        $query->where('banjis.user_id', $teacher->id); 
-    }])->get();
-    	$banjis = Banji::where('user_id', $teacher->id)->get();
+    {
+        try {
+            $teacher = auth()->user();
+            // 验证用户是否有权限创建作业
+            if (!$teacher) {
+                abort(403, 'Unauthorized action.');
+            }
 
-    return view('assignments.create', compact('teacher', 'subjects', 'banjis','assignment'));
-	}
+            $assignment = new Assignment();
+            
+            // 获取教师教授的科目及其班级
+            $subjects = $teacher->taughtSubjects()
+                ->with(['banjis' => function($query) use ($teacher) {
+                    $query->whereIn('banjis.id', function($q) use ($teacher) {
+                        $q->select('banji_id')
+                          ->from('teacher_banji_subject')
+                          ->where('user_id', $teacher->id);
+                    });
+                }])
+                ->get();
+
+            // 从teacher_banji_subject表获取教师管理的所有班级
+            $banjis = Banji::whereIn('id', function($query) use ($teacher) {
+                    $query->select('banji_id')
+                          ->from('teacher_banji_subject')
+                          ->where('user_id', $teacher->id);
+                })
+                ->with('grade')
+                ->get();
+
+            return view('assignments.create', compact('teacher', 'subjects', 'assignment', 'banjis'));
+        } catch (\Exception $e) {
+            Log::error('Failed to load assignment creation page: '.$e->getMessage());
+            abort(500, 'Failed to load assignment creation page. Please try again later.');
+        }
+    }
     // 保存作业并关联班级
     public function store(Request $request) {
         $assignment = Assignment::create($request->validate([

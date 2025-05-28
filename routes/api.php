@@ -17,3 +17,20 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/banjis', function (Request $request) {
+    $gradeId = $request->input('grade_id');
+    $banjis = \App\Models\Banji::where('grade_id', $gradeId)
+        ->select('id', 'name')
+        ->get();
+    return response()->json($banjis);
+});
+
+Route::get('/quantify/semester-report', [\App\Http\Controllers\QuantifyReportController::class, 'apiSemesterReport']);
+
+Route::get('/quantify-items/{id}', function ($id) {
+    $item = \App\Models\QuantifyItem::findOrFail($id);
+    return response()->json([
+        'score' => $item->score
+    ]);
+});

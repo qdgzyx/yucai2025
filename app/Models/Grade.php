@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Grade extends Model
@@ -10,7 +12,7 @@ class Grade extends Model
     
     protected $fillable = ['name', 'year'];
     
-    public function banji()
+    public function banjis(): HasMany
     {
         return $this->hasMany(Banji::class);
     }

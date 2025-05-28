@@ -73,3 +73,14 @@ Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubje
      ->middleware('auth');
 // Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class)
 //      ->parameters(['teacher-banji-subjects' => 'id']);
+Route::resource('academics', 'AcademicsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('semesters', 'SemestersController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('quantify_types', 'QuantifyTypesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('quantify_items', 'QuantifyItemsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::resource('quantify_records', 'QuantifyRecordsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+
+Route::get('quantify/display', [\App\Http\Controllers\QuantifyDisplayController::class, 'index'])
+    ->name('quantify.display');
+
+Route::get('quantify/semester-report', [\App\Http\Controllers\QuantifyReportController::class, 'semesterReport'])
+    ->name('quantify.semester_report');

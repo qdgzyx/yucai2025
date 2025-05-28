@@ -150,45 +150,24 @@ public function store(ReportRequest $request)
     return view('reports.summary', compact('banjis', 'today', 'totals'));
     }
 
-    public function summaryByGrade($grade_id)
+    public function summaryByGrade($grade_id, Request $request)
     {
-    //    $this->authorize('summaryByGrade', $grade_id);
-        $selectedDate = request()->validate([
-        'date' => 'nullable|date|before_or_equal:today'
-    ])['date'] ?? now()->toDateString();
-        // 获取年级信息
-        $grade = Grade::findOrFail($grade_id);
-        
-        // 获取该年级所有班级（自然排序）
-        $allBanji = Banji::where('grade_id', $grade_id)
-            ->orderByRaw('CAST(SUBSTRING(name, LOCATE("班", name) - 1, 1) AS UNSIGNED)')
-            ->get();
+    // 获取当前年级
+    $currentGrade = Grade::find($grade_id)->name;
 
-        // 获取已提交的出勤数据
-        $banjis = Report::whereHas('banji', function($query) use ($grade_id, $selectedDate) {
-                $query->where('grade_id', $grade_id)->whereDate('created_at', $selectedDate);
-            })
-            ->with('banji')
-            ->get();
+    // 获取所有班级
+    $allBanji = Banji::where('grade_id', $grade_id)->orderBy('name')->get(); // 修改：按班级名称排序
 
-        // 计算统计值
-        $totals = [
-            'total_expected' => $allBanji->sum('student_count'),
-            'total_actual' => $banjis->sum('total_actual'),
-            'sick_leave_count' => $banjis->sum('sick_leave_count'),
-            'personal_leave_count' => $banjis->sum('personal_leave_count'),
-            'absent_count' => $allBanji->sum('student_count') - $banjis->sum('total_actual')
-        ];
+    // 获取已提交的班级数据
+    $selectedDate = $request->input('date', now()->toDateString());
+    $banjis = Report::where('date', $selectedDate)
+                    ->whereHas('banji', function ($query) use ($grade_id) {
+                        $query->where('grade_id', $grade_id);
+                    })
+                    ->with('banji')
+                    ->get();
 
-        return view('reports.summary', [
-            'allBanji' => $allBanji,
-            'banjis' => $banjis,
-            'totals' => $totals,
-            'selectedDate' => $selectedDate,
-            'grade_id' => $grade_id,
-            'today' => now()->format('Y-m-d'),
-            'currentGrade' => $grade->name
-        ]);
+    return view('reports.summary', compact('allBanji', 'banjis', 'currentGrade', 'grade_id', 'selectedDate'));
     }
 
     public function exportByGrade($grade_id)

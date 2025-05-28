@@ -1,5 +1,5 @@
-<div class="form-group">
-    <label for="login">用户名/邮箱/手机号</label>
+<div class="form-group row">
+    <label for="login">邮箱</label>
     <input id="login" type="text" class="form-control @error('login') is-invalid @enderror" name="login" value="{{ old('login') }}" required autocomplete="login" autofocus>
     @error('login')
         <span class="invalid-feedback" role="alert">

@@ -49,7 +49,7 @@
           </thead>
           
           <tbody>
-            @foreach($allBanji as $class)
+            @foreach($allBanji as $class) <!-- 修改：移除视图中的排序逻辑 -->
             @php
             $submitted = $banjis->firstWhere('banji.id', $class->id);
             @endphp
