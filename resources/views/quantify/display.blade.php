@@ -4,11 +4,20 @@
 <div class="container-fluid py-4">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">量化公示 - {{ $currentSemester->name }}</h3>
+            <h3 class="card-title text-center">青岛西海岸新区育才初级中学班级量化考核公示</h3>
             
             <div class="card-tools">
                 <form method="GET" action="{{ route('quantify.display') }}" class="form-inline">
                     <div class="input-group input-group-sm">
+                        {{-- 新增年级选择 --}}
+                        <select name="grade_id" class="form-control mr-2" onchange="this.form.submit()">
+                            @foreach($grades as $grade)
+                                <option value="{{ $grade->id }}" {{ $selectedGradeId == $grade->id ? 'selected' : '' }}>
+                                    {{ $grade->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        
                         <select name="period" class="form-control" onchange="this.form.submit()">
                             <option value="day" {{ $periodType === 'day' ? 'selected' : '' }}>日汇总</option>
                             <option value="week" {{ $periodType === 'week' ? 'selected' : '' }}>周汇总</option>
@@ -53,39 +62,29 @@
                         <tr>
                             @foreach($quantifyItems as $type => $items)
                                 @foreach($items as $item)
-                                    <th title="{{ $item->criteria }}">{{ $item->name }}</th>
+                                    <th title="{{ $item->criteria }}">{{ $item->name }} （{{ $item->score }}）</th>
                                 @endforeach
                             @endforeach
                         </tr>
                     </thead>
                     
                     <tbody>
-                        @foreach($grades as $grade)
-                            <tr class="grade-header bg-gray-100">
-                                <td colspan="{{ array_reduce($quantifyItems->toArray(), function($carry, $items) { return $carry + count($items); }, 0) + 3 }}" 
-                                    data-toggle="collapse" href="#grade-{{ $grade->id }}" 
-                                    style="cursor: pointer">
-                                    <strong>{{ $grade->name }}</strong>
-                                    <i class="fas fa-chevron-down float-right"></i>
-                                </td>
-                            </tr>
-                            
-                            <tbody id="grade-{{ $grade->id }}" class="collapse show">
-                                @foreach($quantifyData[$grade->id] ?? [] as $banjiId => $row)
-                                    <tr>
-                                        <td>{{ $row['banji']->name }}</td>
-                                        
-                                        @foreach($quantifyItems as $type => $items)
-                                            @foreach($items as $item)
-                                                <td class="text-center">{{ $row['items'][$type][$item->id] ?? 0 }}</td>
-                                            @endforeach
+                        {{-- 修改为直接遍历年级班级 --}}
+                        @foreach($filteredGrades as $grade)
+                            @foreach($quantifyData[$grade->id] ?? [] as $banjiId => $row)
+                                <tr>
+                                    <td>{{ $row['banji']->name }}</td>
+                                    
+                                    @foreach($quantifyItems as $type => $items)
+                                        @foreach($items as $item)
+                                            <td class="text-center">{{ $row['items'][$type][$item->id] ?? 0 }}</td>
                                         @endforeach
-                                        
-                                        <td class="text-center font-weight-bold">{{ $row['total'] }}</td>
-                                        <td class="text-center">{{ $row['rank'] ?? '-' }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                                    @endforeach
+                                    
+                                    <td class="text-center font-weight-bold">{{ $row['total'] }}</td>
+                                    <td class="text-center">{{ $row['rank'] ?? '-' }}</td>
+                                </tr>
+                            @endforeach
                         @endforeach
                     </tbody>
                 </table>
@@ -96,12 +95,5 @@
 @endsection
 
 @section('scripts')
-<script>
-$(document).ready(function() {
-    // 折叠/展开年级数据
-    $('.grade-header').click(function() {
-        $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
-    });
-});
-</script>
-@endsection
+<!-- 确保正确引入jQuery库 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

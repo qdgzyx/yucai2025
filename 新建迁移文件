@@ -1,0 +1,19 @@
+// 在quantify_records表的迁移文件中应包含
+Schema::create('quantify_records', function (Blueprint $table) {
+    $table->unsignedBigInteger('user_id');
+    $table->foreign('user_id')->references('id')->on('users');
+
+    $table->unsignedBigInteger('banji_id')->after('user_id');
+    $table->foreign('banji_id')->references('id')->on('banjis');
+
+    $table->unsignedBigInteger('grade_id')->after('banji_id');
+    $table->foreign('grade_id')->references('id')->on('grades');
+
+    $table->unsignedBigInteger('subject_id')->after('grade_id');
+    $table->foreign('subject_id')->references('id')->on('subjects');
+
+    $table->unsignedBigInteger('quantify_id')->after('subject_id');
+    $table->foreign('quantify_id')->references('id')->on('quantifies');
+
+    $table->timestamps();
+});

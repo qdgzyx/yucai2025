@@ -35,6 +35,11 @@
                             @endforeach
                         </tbody>
                     </table>
+                    
+                    {{-- 新增分页导航 --}}
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ $quantify_records->links() }}
+                    </div>
                 </div>
             </div>
         </div>

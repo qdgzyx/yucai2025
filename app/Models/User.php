@@ -111,4 +111,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Subject::class, 'teacher_banji_subject')
             ->withPivot(['banji_id']); 
     }
+    
+    // 新增量化记录关联关系
+    public function quantifyRecords()
+    {
+        return $this->hasMany(QuantifyRecord::class);
+    }
 }

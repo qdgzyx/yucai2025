@@ -7,12 +7,12 @@
     <div class="card ">
 
       <div class="card-header">
-        <h1>
-          量化记录 /
+        <h1 class="text-center">
+          育才初级中学班级量化记录表
           @if($quantify_record->id)
             编辑 #{{ $quantify_record->id }}
           @else
-            新建
+            
           @endif
         </h1>
         
@@ -23,11 +23,11 @@
             @csrf
             
             <div class="row mb-4">
-                <div class="col-md-4">
-                    <label class="form-label required">学期</label>
-                    <select class="form-control" name="semester_id" required>
-                        @foreach($semesters as $semester)
-                            <option value="{{ $semester->id }}">{{ $semester->name }}</option>
+               <div class="col-md-4">
+                    <label class="form-label required">级部</label>
+                    <select class="form-control" name="grade_id" id="grade-select" required>
+                        @foreach($grades as $grade)
+                            <option value="{{ $grade->id }}">{{ $grade->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -39,14 +39,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label required">级部</label>
-                    <select class="form-control" name="grade_id" id="grade-select" required>
-                        @foreach($grades as $grade)
-                            <option value="{{ $grade->id }}">{{ $grade->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                
             </div>
 
             <div class="table-responsive">
@@ -66,6 +59,7 @@
                                     <input type="number" step="0.1" name="scores[{{ $banji->id }}]" 
                                            class="form-control" required
                                            max="{{ $quantifyItemScore }}"
+                                           value="{{ $quantifyItemScore }}"
                                            oninput="validateScore(this, {{ $quantifyItemScore }})">
                                     <div class="invalid-feedback" id="feedback-{{ $banji->id }}"></div>
                                 </td>
@@ -146,6 +140,7 @@ document.getElementById('grade-select').addEventListener('change', function() {
                                 <input type="number" step="0.1" name="scores[${banji.id}]" 
                                        class="form-control" required
                                        max="${maxScore}"
+                                       value="${maxScore}"
                                        oninput="validateScore(this, ${maxScore})">
                                 <div class="invalid-feedback" id="feedback-${banji.id}"></div>
                             </td>

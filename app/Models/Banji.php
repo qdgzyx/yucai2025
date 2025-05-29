@@ -20,7 +20,7 @@ class Banji extends Model
     // {
     // return $this->hasMany(User::class, 'banji_id');
     // }
-    public function grade(): BelongsTo
+    public function grade()
     {
         return $this->belongsTo(Grade::class);
     }

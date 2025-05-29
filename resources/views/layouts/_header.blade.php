@@ -16,6 +16,10 @@
           <li class="nav-item {{ category_nav_active(1) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 1) }}">七年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(2) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 2) }}">八年级出勤</a></li>
           <li class="nav-item {{ category_nav_active(3) }}"><a class="nav-link" href="{{ route('reports.summary.grade', 3) }}">九年级出勤</a></li>
+          {{-- 新增量化记录添加入口 --}}
+          <li class="nav-item {{ active_class(if_route('quantify_records.create')) }}">
+            <a class="nav-link" href="{{ route('quantify_records.create') }}">添加记录</a>
+          </li>
           <li class="nav-item {{ category_nav_active(4) }}"><a class="nav-link" href="{{ route('reports.create') }}">每日上报</a></li>
           <li class="nav-item {{ category_nav_active(5) }}">
             <a class="nav-link" href="{{ route('banjis.assignments', ['banji' => Auth::user()->banji_id ?? 1]) }}">作业清单</a>
