@@ -1,5 +1,5 @@
 require('./bootstrap');
-require('./sidebar');
+
 
 
 

@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="container">
+   
   <div class="col-md-10 offset-md-1">
+    <!-- 添加顶部图片 -->
+        <img src="https://.jpg" 
+             alt="Banner" 
+             class="img-fluid mb-3"
+             style="width: 100%; max-width: 1200px; height: 60px;">
     <div class="card ">
       <div class="card-header">
   <div class="d-flex align-items-center justify-content-between">

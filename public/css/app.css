@@ -1,5 +1,6 @@
-@import url(https://fonts.bunny.net/css?family=Nunito);
 @charset "UTF-8";
+@import url(https://fonts.bunny.net/css?family=Nunito);
+
 /*!
  * Bootstrap  v5.3.6 (https://getbootstrap.com/)
  * Copyright 2011-2025 The Bootstrap Authors
@@ -20263,28 +20264,6 @@ readers do not read off random characters that represent icons */
  */
 :root, :host {
   --fa-style-family-classic: "Font Awesome 6 Free";
-  --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free";
-}
-
-@font-face {
-  font-family: "Font Awesome 6 Free";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-regular-400.woff2?89999bdf5d835c0120257222e5568fec) format("woff2"), url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-regular-400.ttf?914997e1bdfc990d0897cdaba877a0b3) format("truetype");
-}
-.far,
-.fa-regular {
-  font-weight: 400;
-}
-
-/*!
- * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
- * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
- * Copyright 2024 Fonticons, Inc.
- */
-:root, :host {
-  --fa-style-family-classic: "Font Awesome 6 Free";
   --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Free";
 }
 
@@ -20298,6 +20277,28 @@ readers do not read off random characters that represent icons */
 .fas,
 .fa-solid {
   font-weight: 900;
+}
+
+/*!
+ * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+ * Copyright 2024 Fonticons, Inc.
+ */
+:root, :host {
+  --fa-style-family-classic: "Font Awesome 6 Free";
+  --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free";
+}
+
+@font-face {
+  font-family: "Font Awesome 6 Free";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-regular-400.woff2?89999bdf5d835c0120257222e5568fec) format("woff2"), url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-regular-400.ttf?914997e1bdfc990d0897cdaba877a0b3) format("truetype");
+}
+.far,
+.fa-regular {
+  font-weight: 400;
 }
 
 /*!
@@ -22890,100 +22891,4 @@ body {
   margin: 0.4em auto 0.6em;
   font-size: 28px;
   line-height: 38px;
-}
-
-/* 添加或修改样式 */
-.sidebar-menu {
-  position: fixed;
-  top: 0;
-  left: -200px; /* 修改初始位置以匹配新的宽度 */
-  width: 200px;
-  height: 100%;
-  background: linear-gradient(160deg, #f0fcff, #ffffff);
-  border-right: 2px solid #e3f9ff;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease; /* 默认过渡效果 */
-}
-.sidebar-menu li a.btn {
-  display: block;
-  text-align: left;
-  margin: 0.4rem 1rem;
-  padding: 0.6rem 1.5rem;
-  border-radius: 25px;
-  background: linear-gradient(145deg, #00b5ad, #00d4c6);
-  color: white !important;
-  box-shadow: 0 3px 8px rgba(0, 181, 173, 0.2);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  padding-left: 2.5rem;
-}
-.sidebar-menu li a.btn::before {
-  content: none;
-}
-.sidebar-menu li a.btn:hover {
-  transform: translateX(8px);
-  background: linear-gradient(145deg, #00d4c6, #00b5ad);
-  box-shadow: 0 5px 15px rgba(0, 181, 173, 0.3);
-}
-.sidebar-menu .dropdown-menu {
-  position: static;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #b3e9e6;
-  box-shadow: 0 4px 12px rgba(0, 181, 173, 0.15);
-  border-radius: 15px;
-}
-.sidebar-menu .dropdown-menu .dropdown-item {
-  padding: 0.6rem 1.5rem;
-  color: #333;
-  background-color: #f8f9fa;
-  padding-left: 2rem;
-  position: relative;
-}
-.sidebar-menu .dropdown-menu .dropdown-item::before {
-  content: none;
-}
-.sidebar-menu .dropdown-menu .dropdown-item:hover {
-  background: #e3f9f8;
-}
-.sidebar-menu .dropdown:hover .dropdown-menu {
-  display: block;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.sidebar-menu.open {
-  left: 0;
-  background: linear-gradient(145deg, #dbefff, #e8f4ff);
-}
-
-@keyframes floatDot {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-.sidebar-menu::after {
-  content: "";
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 8px;
-  height: 8px;
-  background: #42A5F5;
-  border-radius: 50%;
-  animation: floatDot 1.5s ease-in-out infinite;
 }

@@ -87,11 +87,25 @@
 .sidebar-menu::after {
     content: '';
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 20px; // 调整到左下角
+    left: 20px; // 调整到左下角
     width: 8px;
     height: 8px;
     background: #42A5F5; // Material Blue 400
     border-radius: 50%;
     animation: floatDot 1.5s ease-in-out infinite;
+}
+
+// 引入Font Awesome图标库
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+
+// 使用Font Awesome图标替换默认图标
+.sidebar-menu .toggle-sidebar-btn::before {
+    font-family: 'Font Awesome 5 Free';
+    content: '\f0c9'; // Font Awesome 的汉堡菜单图标
+    display: inline-block;
+    font-weight: 900;
+    color: #42A5F5;
+    margin-right: 10px;
 }

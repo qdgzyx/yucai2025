@@ -25251,7 +25251,6 @@ process.umask = function() { return 0; };
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
-__webpack_require__(/*! ./sidebar */ "./resources/js/sidebar.js");
 
 /***/ }),
 
@@ -25298,28 +25297,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
 //     enabledTransports: ['ws', 'wss'],
 // });
-
-/***/ }),
-
-/***/ "./resources/js/sidebar.js":
-/*!*********************************!*\
-  !*** ./resources/js/sidebar.js ***!
-  \*********************************/
-/***/ (() => {
-
-document.addEventListener('DOMContentLoaded', function () {
-  var toggleBtn = document.querySelector('.toggle-sidebar-btn');
-  var sidebar = document.querySelector('.sidebar-menu');
-  toggleBtn.addEventListener('click', function () {
-    sidebar.classList.toggle('open');
-  });
-});
-// 修改动画方向为水平移动
-if (sidebar.classList.contains('open')) {
-  sidebar.style.left = '0';
-} else {
-  sidebar.style.left = '-250px';
-}
 
 /***/ }),
 

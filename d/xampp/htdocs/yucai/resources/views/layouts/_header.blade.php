@@ -36,7 +36,7 @@
                     sidebar.style.left = '0';
                 } else {
                     sidebar.style.transition = 'left 0.3s ease';
-                    sidebar.style.left = '-250px';
+                    sidebar.style.left = '-200px'; // 修改为-200px以匹配新的宽度
                 }
             });
         } else {
