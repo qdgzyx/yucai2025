@@ -22891,3 +22891,99 @@ body {
   font-size: 28px;
   line-height: 38px;
 }
+
+/* 添加或修改样式 */
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: -200px; /* 修改初始位置以匹配新的宽度 */
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(160deg, #f0fcff, #ffffff);
+  border-right: 2px solid #e3f9ff;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease; /* 默认过渡效果 */
+}
+.sidebar-menu li a.btn {
+  display: block;
+  text-align: left;
+  margin: 0.4rem 1rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  background: linear-gradient(145deg, #00b5ad, #00d4c6);
+  color: white !important;
+  box-shadow: 0 3px 8px rgba(0, 181, 173, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  padding-left: 2.5rem;
+}
+.sidebar-menu li a.btn::before {
+  content: none;
+}
+.sidebar-menu li a.btn:hover {
+  transform: translateX(8px);
+  background: linear-gradient(145deg, #00d4c6, #00b5ad);
+  box-shadow: 0 5px 15px rgba(0, 181, 173, 0.3);
+}
+.sidebar-menu .dropdown-menu {
+  position: static;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #b3e9e6;
+  box-shadow: 0 4px 12px rgba(0, 181, 173, 0.15);
+  border-radius: 15px;
+}
+.sidebar-menu .dropdown-menu .dropdown-item {
+  padding: 0.6rem 1.5rem;
+  color: #333;
+  background-color: #f8f9fa;
+  padding-left: 2rem;
+  position: relative;
+}
+.sidebar-menu .dropdown-menu .dropdown-item::before {
+  content: none;
+}
+.sidebar-menu .dropdown-menu .dropdown-item:hover {
+  background: #e3f9f8;
+}
+.sidebar-menu .dropdown:hover .dropdown-menu {
+  display: block;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.sidebar-menu.open {
+  left: 0;
+  background: linear-gradient(145deg, #dbefff, #e8f4ff);
+}
+
+@keyframes floatDot {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.sidebar-menu::after {
+  content: "";
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 8px;
+  height: 8px;
+  background: #42A5F5;
+  border-radius: 50%;
+  animation: floatDot 1.5s ease-in-out infinite;
+}

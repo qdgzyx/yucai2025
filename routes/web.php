@@ -7,6 +7,8 @@ Route::get('/', 'ReportsController@create')->name('root');
 // 用户身份验证相关的路由
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
+
+Route::middleware(['auth'])->group(function () {
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 // 用户注册相关路由
@@ -78,9 +80,17 @@ Route::resource('semesters', 'SemestersController', ['only' => ['index', 'show',
 Route::resource('quantify_types', 'QuantifyTypesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('quantify_items', 'QuantifyItemsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('quantify_records', 'QuantifyRecordsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::post('/quantify_records/batch', [\App\Http\Controllers\QuantifyRecordsController::class, 'destroyBatch'])
+     ->name('quantify_records.destroyBatch');
 
 Route::get('quantify/display', [\App\Http\Controllers\QuantifyDisplayController::class, 'index'])
     ->name('quantify.display');
 
 Route::get('quantify/semester-report', [\App\Http\Controllers\QuantifyReportController::class, 'semesterReport'])
     ->name('quantify.semester_report');
+
+
+});
+Auth::routes();
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

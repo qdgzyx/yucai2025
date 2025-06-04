@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\QuantifyRecordRequest;
 use Illuminate\Support\Facades\DB; // 新增DB门面引入
 use App\Rules\MaxScore; // 新增：引入自定义验证规则类
+use Carbon\Carbon; // 新增：引入Carbon日期处理类
 
 class QuantifyRecordsController extends Controller
 {
@@ -28,10 +29,13 @@ class QuantifyRecordsController extends Controller
     // 安全改进：添加授权检查
     public function index()
     {
-        // 修改分页数量为15条/页，并按ID倒序排列
-        $quantify_records = QuantifyRecord::with('user', 'quantifyItem')
-            ->orderBy('id', 'desc')
+        // 修改为按检查时间和量化项目分组展示
+        $quantify_records = auth()->user()->quantifyRecords()
+            ->with('banji','user', 'quantifyItem')
+            ->orderBy('assessed_at', 'desc')
+            ->orderBy('quantify_item_id')
             ->paginate(15);
+
         return view('quantify_records.index', compact('quantify_records'));
     }
 
@@ -65,11 +69,30 @@ class QuantifyRecordsController extends Controller
 	    $quantifyItem = QuantifyItem::findOrFail($request->quantify_item_id);
 
         $data = $request->validate([
-            'quantify_item_id' => 'required|exists:quantify_items,id,user_id,'.auth()->id(),
+            'quantify_item_id' => [
+                'required',
+                'exists:quantify_items,id,user_id,'.auth()->id(),
+                function ($attribute, $value, $fail) use ($request) {
+                    $query = QuantifyRecord::where('user_id', auth()->id())
+                        ->where('quantify_item_id', $value)
+                        ->whereDate('assessed_at', Carbon::parse($request->assessed_at)->toDateString());
+
+                    // 添加排除当前编辑记录的判断（仅更新时生效）
+                    if ($request->isMethod('put') || $request->isMethod('patch')) {
+                        $recordId = $request->route('quantify_record');
+                        $query->where('id', '!=', $recordId->id);
+                    }
+
+                    if ($query->exists()) {
+                        $fail('该量化项目今日已检查过（检查时间：'.Carbon::parse($request->assessed_at)->toDateString().'），请勿重复录入');
+                    }
+                }
+            ],
             'scores' => 'required|array|min:1',
             'scores.*' => ['numeric', 'min:0', new MaxScore($quantifyItem->score)],
             'remarks' => 'nullable|array',
-            'remarks.*' => 'max:500'
+            'remarks.*' => 'max:500',
+            'assessed_at' => 'required|date', // 新增检查时间验证
         ]);
 
         // 新增：获取并验证班级数据
@@ -90,7 +113,7 @@ class QuantifyRecordsController extends Controller
                 'remark' => $data['remarks'][$banji->id] ?? null,
                 'user_id' => $user->id,
                 'ip_address' => request()->ip(),
-                'assessed_at' => now()
+                'assessed_at' => $data['assessed_at'] // 替换原来的now()
             ];
         });
 
@@ -98,13 +121,30 @@ class QuantifyRecordsController extends Controller
         DB::transaction(function () use ($records, $user) {
             $user->quantifyRecords()->createMany($records);
         });
-	}
+
+        // 新增：完成存储后重定向到列表页
+        return redirect()->route('quantify_records.index')
+            ->with('message', '记录添加成功');
+    }
+
 	public function edit(QuantifyRecord $quantify_record)
     {
-        if (!auth()->user()->is_admin && $quantify_record->quantifyItem->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized action.');
+        // 改进权限检查逻辑：
+        // 1. 管理员可以编辑所有记录
+        // 2. 普通用户只能编辑自己创建的记录
+        // 3. 处理量化项目被删除的情况
+        if (!auth()->user()->is_admin) {
+            // 检查记录所属用户
+            if ($quantify_record->user_id !== auth()->id()) {
+                abort(403, '您没有权限编辑此记录');
+            }
+            
+            // 安全检查量化项目是否存在
+            if (!$quantify_record->quantifyItem) {
+                abort(404, '关联的量化项目不存在');
+            }
         }
-        
+
         return view('quantify_records.create_and_edit', [
             'quantify_record' => $quantify_record,
             'quantify_items' => QuantifyItem::when(!auth()->user()->is_admin, function($query) {
@@ -118,13 +158,67 @@ class QuantifyRecordsController extends Controller
 	}
 
     // 安全改进：使用路由模型绑定和策略
-    public function update(QuantifyRecordRequest $request, QuantifyRecord $quantify_record)
+    public function update(Request $request, QuantifyRecord $quantify_record)
     {
-        $this->authorize('update', $quantify_record); // 使用策略授权
-		$quantify_record->update($request->all());
+        $this->authorize('update', $quantify_record);
+        
+        $currentSemester = Semester::where('is_current', true)->firstOrFail();
+        $quantifyItem = QuantifyItem::findOrFail($request->quantify_item_id);
 
-		return redirect()->route('quantify_records.show', $quantify_record->id)->with('message', 'Updated successfully.');
-	}
+        $data = $request->validate([
+            'quantify_item_id' => [
+                'required',
+                'exists:quantify_items,id,user_id,'.auth()->id(),
+                function ($attribute, $value, $fail) use ($request, $quantify_record) {
+                    $existing = QuantifyRecord::where('user_id', auth()->id())
+                        ->where('quantify_item_id', $value)
+                        ->whereDate('assessed_at', Carbon::parse($request->assessed_at)->toDateString())
+                        ->where('id', '!=', $quantify_record->id)
+                        ->exists();
+                
+                    if ($existing) {
+                        $fail('该量化项目今日已检查过（检查时间：'.Carbon::parse($request->assessed_at)->toDateString().'），请勿重复录入');
+                    }
+                }
+            ],
+            'scores' => 'required|array|min:1',
+            'scores.*' => ['numeric', 'min:0', new MaxScore($quantifyItem->score)],
+            'remarks' => 'nullable|array',
+            'remarks.*' => 'max:500',
+            'assessed_at' => 'required|date',
+        ]);
+
+        // 更新记录逻辑（根据实际业务需求补充）
+        $quantify_record->update([
+            'quantify_item_id' => $data['quantify_item_id'],
+            'assessed_at' => $data['assessed_at'],
+            'score' => array_sum($data['scores']),
+            'remark' => json_encode($data['remarks'])
+        ]);
+
+        return redirect()->route('quantify_records.index')
+            ->with('message', '记录更新成功');
+    }
+
+    public function destroyBatch(Request $request)
+    {
+        $request->validate([
+            'quantify_item_id' => 'required|exists:quantify_items,id',
+            'assessed_at' => 'required|date'
+        ]);
+
+        $records = QuantifyRecord::where('quantify_item_id', $request->quantify_item_id)
+            ->whereDate('assessed_at', $request->assessed_at)
+            ->where('user_id', auth()->id())
+            ->get();
+
+        foreach ($records as $record) {
+            $record->delete();
+        }
+
+        return redirect()->route('quantify_records.index')
+            ->with('message', '批次记录删除成功');
+    }
 
     // 安全改进：添加软删除支持
     public function destroy(QuantifyRecord $quantify_record)

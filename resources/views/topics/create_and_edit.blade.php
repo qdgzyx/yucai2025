@@ -88,3 +88,4 @@
     });
   </script>
 @stop
+@endsection

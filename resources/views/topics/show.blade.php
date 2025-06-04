@@ -7,57 +7,49 @@
 
   <div class="row">
 
-    <div class="col-lg-3 col-md-3 hidden-sm hidden-xs author-info">
-      <div class="card ">
+    {{-- 扩展主内容区域为全宽 --}}
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 topic-content">
+      <div class="card shadow-sm">
         <div class="card-body">
-          <div class="text-center">
-            作者：{{ $topic->user->name }}
-          </div>
-          <hr>
-          <div class="media">
-            <div align="center">
-              <a href="{{ route('users.show', $topic->user->id) }}">
-                <img class="thumbnail img-fluid" src="{{ $topic->user->avatar }}" width="300px" height="300px">
-              </a>
+          {{-- 优化标题区域 --}}
+          <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold text-primary mb-3">
+              {{ $topic->title }}
+            </h1>
+            <div class="d-flex justify-content-center align-items-center text-muted">
+              <span class="me-3">
+                <i class="fas fa-user-circle me-1"></i>{{ $topic->user->name }}
+              </span>
+              <span class="me-3">
+                <i class="fas fa-clock me-1"></i>{{ $topic->created_at->diffForHumans() }}
+              </span>
+              <span>
+                <i class="fas fa-comments me-1"></i>{{ $topic->reply_count }} 条回复
+              </span>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 topic-content">
-      <div class="card">
-        <div class="card-body">
-          <h1 class="text-center mt-3 mb-3">
-            {{ $topic->title }}
-          </h1>
-
-          <div class="article-meta text-center text-secondary">
-            {{ $topic->created_at->diffForHumans() }}
-            ⋅
-            <i class="far fa-comment"></i>
-            {{ $topic->reply_count }}
+            <hr class="w-25 mx-auto my-4">
           </div>
 
-          <div class="topic-body mt-4 mb-4">
+          {{-- 优化正文样式 --}}
+          <div class="topic-body fs-5 lh-base text-gray-800">
             {!! $topic->body !!}
           </div>
 
+          {{-- 美化操作按钮 --}}
           @can('update', $topic)
-            <div class="operate">
-              <hr>
-              <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-outline-secondary btn-sm" role="button">
-                <i class="far fa-edit"></i> 编辑
-              </a>
-              <form action="{{ route('topics.destroy', $topic->id) }}" method="post"
-                    style="display: inline-block;"
-                    onsubmit="return confirm('您确定要删除吗？');">
-                {{ csrf_field() }}
-                {{ method_field('DELETE') }}
-                <button type="submit" class="btn btn-outline-secondary btn-sm">
-                  <i class="far fa-trash-alt"></i> 删除
-                </button>
-              </form>
+            <div class="operate mt-5">
+              <div class="d-flex gap-3 justify-content-end">
+                <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-primary btn-lg px-4">
+                  <i class="far fa-edit me-2"></i>编辑文章
+                </a>
+                <form action="{{ route('topics.destroy', $topic->id) }}" method="post">
+                  {{ csrf_field() }}
+                  {{ method_field('DELETE') }}
+                  <button type="submit" class="btn btn-danger btn-lg px-4" onclick="return confirm('确定要删除吗？')">
+                    <i class="far fa-trash-alt me-2"></i>删除文章
+                  </button>
+                </form>
+              </div>
             </div>
           @endcan
 

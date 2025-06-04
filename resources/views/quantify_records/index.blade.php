@@ -17,21 +17,52 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>班级</th>
                                 <th>量化项目</th>
                                 <th>分数</th>
                                 <th>用户</th>
-                                <th>创建时间</th>
+                                <th>检查时间</th>
+                                <th>操作</th> <!-- 新增操作列 -->
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($quantify_records as $quantify_record)
-                                <tr>
-                                  <td>{{ $quantify_record->id }}</td>
-                                  <td>{{ $quantify_record->quantifyItem->name }}</td>
-                                  <td>{{ $quantify_record->score }}</td>
-                                  <td>{{ $quantify_record->user->name }}</td>
-                                  <td>{{ $quantify_record->created_at }}</td>
-                                </tr>
+                            @php
+                                $groupedRecords = $quantify_records->groupBy(function($item) {
+                                    return $item->quantify_item_id.'_'.$item->assessed_at->format('Y-m-d');
+                                });
+                            @endphp
+
+                            @foreach ($groupedRecords as $groupKey => $records)
+                                @foreach ($records as $index => $quantify_record)
+                                    <tr>
+                                        <td>{{ $quantify_record->id }}</td>
+                                        <td>{{ $quantify_record->banji->name }}</td>
+                                        <td>{{ $quantify_record->quantifyItem->name }}</td>
+                                        <td>{{ $quantify_record->score }}</td>
+                                        <td>{{ $quantify_record->user->name }}</td>
+                                        <td>{{ $quantify_record->assessed_at }}</td>
+                                        <td>
+                                            @if($loop->first)
+                                                <div class="d-flex gap-2">
+                                                    <a href="{{ route('quantify_records.edit', $quantify_record) }}" 
+                                                       class="btn btn-sm btn-primary">
+                                                        编辑批次
+                                                    </a>
+                                                    
+                                                    <form action="{{ route('quantify_records.destroyBatch') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="quantify_item_id" value="{{ $quantify_record->quantify_item_id }}">
+                                                        <input type="hidden" name="assessed_at" value="{{ $quantify_record->assessed_at->format('Y-m-d') }}">
+                                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                            onclick="return confirm('确定要删除该批次的所有记录吗？共{{ $records->count() }}条')">
+                                                            删除批次
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>

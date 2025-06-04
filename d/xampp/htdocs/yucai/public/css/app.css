@@ -1,0 +1,47 @@
+/* 添加或修改样式 */
+.sidebar-menu {
+    position: fixed;
+    top: 0;
+    left: -250px;  /* 初始位置在屏幕外 */
+    width: 250px;
+    height: 100%;
+    background-color: #f8f9fa;
+    transition: left 0.3s ease;  /* 默认过渡效果 */
+}
+
+.sidebar-menu.open {
+    left: 0;  /* 打开时的位置 */
+}
+
+.sidebar-menu li a.btn {
+    display: block;
+    text-align: left;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: 0;
+    width: 100%;
+}
+
+.sidebar-menu li a.btn:hover,
+.sidebar-menu li a.btn:focus {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.sidebar-menu .dropdown-menu {
+    position: static;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.sidebar-menu .dropdown-menu .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.sidebar-menu .dropdown-menu .dropdown-item:hover,
+.sidebar-menu .dropdown-menu .dropdown-item:focus {
+    background-color: #e9ecef;
+}

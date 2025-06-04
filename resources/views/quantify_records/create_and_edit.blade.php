@@ -19,6 +19,17 @@
       </div>
 
       <div class="card-body">
+        {{-- 新增：错误提示区域 --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('quantify_records.store') }}" method="POST">
             @csrf
             
@@ -33,13 +44,27 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label required">量化项目</label>
-                    <select class="form-control" name="quantify_item_id" required>
+                    <select class="form-control @error('quantify_item_id') is-invalid @enderror" name="quantify_item_id" required>
                         @foreach($quantify_items as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}" {{ old('quantify_item_id') == $item->id ? 'selected' : '' }}>
+                                {{ $item->name }}
+                            </option>
                         @endforeach
                     </select>
+                    @error('quantify_item_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 
+                <!-- 新增检查时间选择 -->
+                <div class="col-md-4">
+                    <label class="form-label required">检查时间</label>
+                    <input type="datetime-local" name="assessed_at" class="form-control @error('assessed_at') is-invalid @enderror" required 
+                           value="{{ old('assessed_at', optional($quantify_record->assessed_at)->format('Y-m-d\TH:i') ?? now()->format('Y-m-d\TH:i')) }}">
+                    @error('assessed_at')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
 
             <div class="table-responsive">

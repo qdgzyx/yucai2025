@@ -23,8 +23,6 @@
 <body>
   <div id="app" class="{{ route_class() }}-page">
 
-    @include('layouts._header')
-
     
     <div class="container">
 
@@ -34,12 +32,10 @@
 
     </div>
 
-      @include('layouts._footer')
+    
   </div>
 
-  @if (app()->isLocal())
-    @include('sudosu::user-selector')
-  @endif
+  
 
   
   <script src="{{ mix('js/app.js') }}"></script>
