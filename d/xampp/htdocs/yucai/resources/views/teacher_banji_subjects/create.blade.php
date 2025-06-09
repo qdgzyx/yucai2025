@@ -1,10 +1,3 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-  <div class="col-md-10 offset-md-1">
-    <div class="card ">
-
 <form action="{{ route('teacher-banji-subjects.store') }}" method="POST">
     @csrf
     <table class="table table-bordered mt-3">
@@ -41,9 +34,3 @@
     </table>
     <button type="submit" class="btn btn-primary">提交</button>
 </form>
-
-</div>
-  </div>
-</div>
-
-@endsection

@@ -20,7 +20,7 @@ class TeacherBanjiSubject extends Model {
         return $this->belongsTo(Subject::class, 'subject_id');
     }
 
-    // 定义与 Banji 的关联
+    // 定义与 Banji 的关联 
     public function banji()
     {
         return $this->belongsTo(Banji::class, 'banji_id');

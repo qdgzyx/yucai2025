@@ -3,28 +3,29 @@
 namespace App\Imports;
 
 use App\Models\User;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow; // 处理表头
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
 class UsersImport implements ToModel, WithHeadingRow
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
     public function model(array $row)
     {
-            
+        
+
         return new User([
             'id' => $row['id'] ?? null,
-            'name' => $row['name'],
-            'banji_id' => $row['banji_id'],
+            'name' => $row['name'],            
             'email' => $row['email'],
             'email_verified_at' => $row['email_verified_at'],
-            'password' =>$row['password'],
+            // 处理密码默认值
+            'password' => $row['password'] ? Hash::make($row['password']) : Hash::make('12345678'),
             'remember_token' => \Str::random(60),
-            'avatar' => $row['avatar'],
+            // 处理头像默认值
+            'avatar' => $row['avatar'] ?? 'default-avatar.png',
             'introduction' => $row['introduction'] ?? '',
+            'subject_id' => $row['subject_id'],
+            'banji_id' => $row['banji_id'],
             'notification_count' => $row['notification_count'] ?? 0,
             'last_actived_at' => $row['last_actived_at']
         ]);

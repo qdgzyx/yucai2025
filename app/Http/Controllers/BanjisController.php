@@ -8,6 +8,7 @@ use App\Imports\BanjisImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BanjiRequest;
+use App\Models\User;
 
 class BanjisController extends Controller
 {
@@ -18,7 +19,7 @@ class BanjisController extends Controller
 
 	public function index()
 	{
-		$banjis = Banji::paginate();
+		$banjis = Banji::with('grade', 'user')->paginate(10);
 		return view('banjis.index', compact('banjis'));
 	}
 
@@ -26,7 +27,8 @@ class BanjisController extends Controller
     {
         return view('banjis.show', compact('banji'));
     }
-	public function assignmentshow(Banji $banji) { 
+    
+    public function assignmentshow(Banji $banji) { 
         $assignments = $banji->assignments()
             ->with(['subject', 'teacher'])
             ->active()
@@ -35,10 +37,13 @@ class BanjisController extends Controller
             
         return view('banjis.assignmentshow', compact('banji', 'assignments'));
     }
-	public function create(Banji $banji)
-	{
-		return view('banjis.create_and_edit', compact('banji'));
-	}
+    
+    public function create(Banji $banji)
+    {
+        $grades = \App\Models\Grade::all(); // 获取所有年级数据
+        $teachers = User::all(); // 获取所有用户作为教师列表
+        return view('banjis.create_and_edit', compact('banji', 'grades', 'teachers')); // 添加teachers参数
+    }
 
 	public function store(BanjiRequest $request)
 	{
@@ -48,36 +53,9 @@ class BanjisController extends Controller
 
 	public function edit(Banji $banji)
 	{
-        $this->authorize('update', $banji);
-		return view('banjis.create_and_edit', compact('banji'));
-	}
-
-	public function update(BanjiRequest $request, Banji $banji)
-	{
 		$this->authorize('update', $banji);
-		$banji->update($request->all());
-
-		return redirect()->route('banjis.show', $banji->id)->with('message', 'Updated successfully.');
+		$grades = \App\Models\Grade::all();
+		$teachers = \App\Models\User::all(); // 获取所有用户作为教师列表
+		return view('banjis.create_and_edit', compact('banji', 'grades', 'teachers'));
 	}
-
-	public function destroy(Banji $banji)
-	{
-		$this->authorize('destroy', $banji);
-		$banji->delete();
-
-		return redirect()->route('banjis.index')->with('message', 'Deleted successfully.');
-	}
-	public function showForm()
-    {
-        return view('banjis.import');
-    }
-
-    public function import(Request $request)
-    {
-        $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
-
-        Excel::import(new BanjisImport, $request->file('file'));
-
-        return back()->with('success', '数据导入成功！');
-    }
 }

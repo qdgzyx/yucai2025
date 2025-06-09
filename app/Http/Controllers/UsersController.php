@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Banji;
+use App\Models\Subject;
+use App\Models\TeacherBanjiSubject;
 use App\Imports\UsersImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\UserRequest;
@@ -21,7 +24,9 @@ class UsersController extends Controller
     public function edit(User $user)
     {
         $this->authorize('update', $user);
-        return view('users.edit', compact('user'));
+        $banjis = Banji::all();
+        $subjects = Subject::all();
+        return view('users.edit', compact('user', 'banjis', 'subjects'));
     }
     // public function update(UserRequest $request, User $user)
     // {
@@ -56,5 +61,19 @@ class UsersController extends Controller
 
         return back()->with('success', '数据导入成功！');
     }
-
+    public function teachingSchedule(User $user)
+    {
+    $banjis = Banji::with('teacherBanjiSubjects.teacher')->get();
+    $subjects = Subject::all();
+    return view('users.teaching_schedule', compact('user', 'banjis', 'subjects'));
+    }
+    // 需要确保存在此方法
+    public function downloadTemplate()
+    {
+        $filePath = public_path('downloads/user_template.xlsx');
+        if (!file_exists($filePath)) {
+            abort(404, '模板文件未找到');
+        }
+        return response()->download($filePath, '用户信息模板.xlsx');
+    }
 }

@@ -31,6 +31,8 @@ Route::get('email/verify/{id}/{hash}', 'Auth\VerificationController@verify')->na
 Route::post('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
 
 Route::resource('users', 'UsersController', ['only' => ['show', 'update', 'edit']]);
+// 在用户相关路由组中添加模板下载路由
+Route::get('/user/template', [App\Http\Controllers\UsersController::class, 'downloadTemplate'])->name('user.template');
 
 Route::resource('topics', 'TopicsController', ['only' => ['index', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('categories', 'CategoriesController', ['only' => ['show']]);
@@ -73,8 +75,13 @@ Route::get('/banji/{banji}/assignments', [App\Http\Controllers\AssignmentsContro
 
 Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class)
      ->middleware('auth');
-// Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class)
-//      ->parameters(['teacher-banji-subjects' => 'id']);
+
+// 新增导入路由
+Route::get('/teacher-banji-subject/import', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'showForm'])->name('teacher-banji-subject.import');
+Route::post('/teacher-banji-subject/import', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'import'])->middleware('auth');
+
+Route::get('/teacher-banji-subject/template', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'downloadTemplate'])->name('teacher-banji-subject.template');
+Route::get('/banji/template', [App\Http\Controllers\BanjisController::class, 'downloadTemplate'])->name('banji.template');
 Route::resource('academics', 'AcademicsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('semesters', 'SemestersController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('quantify_types', 'QuantifyTypesController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
@@ -88,7 +95,8 @@ Route::get('quantify/display', [\App\Http\Controllers\QuantifyDisplayController:
 
 Route::get('quantify/semester-report', [\App\Http\Controllers\QuantifyReportController::class, 'semesterReport'])
     ->name('quantify.semester_report');
-
+Route::get('/user/teaching-schedule', [\App\Http\Controllers\UsersController::class, 'teachingSchedule'])
+     ->name('users.teaching-schedule');
 
 });
 Auth::routes();

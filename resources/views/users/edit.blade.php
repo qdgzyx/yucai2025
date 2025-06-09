@@ -45,13 +45,61 @@
             @endif
           </div>
 
+          {{-- 任教信息编辑区域 - 已优化字段命名 --}}
+          <div class="form-group">
+            <label>是否班主任</label>
+            <select class="form-control" name="is_head_teacher" id="is-head-teacher">
+              <option value="0" {{ $user->is_head_teacher == 0 ? 'selected' : '' }}>否</option>
+              <option value="1" {{ $user->is_head_teacher == 1 ? 'selected' : '' }}>是</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="teaching-class-select" style="display: {{ $user->is_head_teacher ? 'block' : 'none' }};">
+            <label>任教班级</label>
+            <select class="form-control select2" name="teaching_classes[]" multiple>
+              @foreach($banjis as $banji)
+                <option value="{{ $banji->id }}" {{ ($user->teacherBanjiSubjects ?: collect())->contains('banji_id', $banji->id) ? 'selected' : '' }}>
+                  {{ $banji->name }}
+                </option>
+              @endforeach
+            </select>
+            <small class="form-text text-muted">按住Ctrl键可多选</small>
+          </div>
+
+          <div class="form-group">
+            <label>任教学科（可多选）</label>
+            <select class="form-control select2" name="subjects[]" multiple>
+              @foreach($subjects as $subject)
+                <option value="{{ $subject->id }}" {{ ($user->teacherBanjiSubjects ?: collect())->contains('subject_id', $subject->id) ? 'selected' : '' }}>
+                  {{ $subject->name }}
+                </option>
+              @endforeach
+            </select>
+            <small class="form-text text-muted">可同时选择多个任教班级的学科</small>
+          </div>
+
           <div class="well well-sm">
             <button type="submit" class="btn btn-primary">保存</button>
           </div>
         </form>
+
       </div>
     </div>
   </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+  // 已实现班级选择动态显示
+  $(document).ready(function() {
+    $('#is-head-teacher').change(function() {
+      $('#teaching-class-select').toggle(this.value == 1);
+    });
+
+    // 确保页面加载时状态正确
+    $('#teaching-class-select').toggle($('#is-head-teacher').val() == 1);
+  });
+</script>
 @endsection

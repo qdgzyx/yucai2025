@@ -20,29 +20,74 @@ class TeacherBanjiSubjectController extends Controller
     {
         $teachers = User::all();
         $subjects = Subject::all();
-        $banjis = Banji::all();
+        // 修改为获取当前年级全部班级（示例取七年级）
+        $banjis = Banji::where('grade_id', '1')->get();
         return view('teacher_banji_subjects.create', compact('teachers', 'subjects', 'banjis'));
     }
 
-    // 存储新关联
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'banji_id' => 'required|exists:banjis,id'
+            'banji_subjects' => 'required|array',
+            'teacher_selection' => 'required|array',
         ]);
 
-        \DB::table('teacher_banji_subject')->insert($request->only(['user_id', 'subject_id', 'banji_id']));
+        // 从Semester模型获取当前学期
+        $semester = Semester::current()->value; // 假设模型有current作用域
         
-        return redirect()->route('teacher-banji-subjects.index')
-                         ->with('success', '关联关系创建成功');
-    }
-    public function destroy()
-	{
-		$this->authorize('destroy', $teacher-banji-subject);
-		$report->delete();
+        foreach ($banjiSubjects as $banjiId => $subjectIds) {
+            foreach ($subjectIds as $subjectId) {
+                // 获取对应的教师ID
+                $teacherId = $teacherSelections[$banjiId][$subjectId] ?? null;
 
-		return redirect()->route('teacher-banji-subjects.index')->with('message', 'Deleted successfully.');
-	}
+                // 如果教师未选择，则跳过
+                if (!$teacherId) {
+                    continue;
+                }
+
+                // 保存到数据库
+                BanjiSubjectTeacher::updateOrCreate(
+                    [
+                        'banji_id' => $banjiId,
+                        'subject_id' => $subjectId,
+                        'semester' => $semester
+                    ],
+                    [
+                        'teacher_id' => $teacherId,
+                        'semester' => $semester // 存储学期信息
+                    ]
+                );
+            }
+        }
+    }
+
+    // 新增批量导入方法
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx,csv',
+        ]);
+        
+        // 改为使用Semester模型获取当前学期
+        $semester = Semester::current()->value;
+        Excel::import(new TeacherBanjiSubjectImport($semester), $request->file('import_file'));
+        
+        return back()->with('success', '批量导入成功');
+    }
+
+    public function downloadTemplate()
+    {
+        // 添加文件存在性检查
+        $filePath = public_path('downloads/teacher_banji_subject.XLSX');
+        if (!file_exists($filePath)) {
+            // 可选：记录日志或返回错误提示
+            abort(404, '模板文件未找到');
+        }
+        return response()->download($filePath, '教师班级学科模板.xlsx');
+    }
+
+    public function showForm()
+    {
+        return view('teacher_banji_subjects.import');
+    }
 }

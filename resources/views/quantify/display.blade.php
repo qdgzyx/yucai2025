@@ -2,11 +2,11 @@
 
 @section('content')
 <div class="container-fluid py-4">
-     <!-- 添加顶部图片 -->
+     <!-- 添加顶部图片
         <img src="https://www.qhfz.edu.cn/images/ej_bn1.jpg" 
              alt="Banner" 
              class="img-fluid mb-3"
-             style="width: 100%; max-width: 1300px; height: 200px;">
+             style="width: 100%; max-width: 1300px; height: 200px;"> -->
     
     <div class="card">
         <div class="card-header">

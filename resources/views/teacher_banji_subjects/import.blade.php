@@ -6,21 +6,15 @@
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">用户信息导入</h5>
+                    <h5 class="mb-0">导入教师-班级-学科关联</h5>
                 </div>
 
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> 支持格式：XLSX/CSV，文件需包含完整用户信息
+                        <i class="fas fa-info-circle"></i> 支持格式：XLSX/CSV，文件需包含班级、学科、教师列
                     </div>
 
-                    @if (session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    <form action="{{ route('user.import') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('teacher-banji-subject.import') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-3">
@@ -46,12 +40,15 @@
                                 开始导入
                             </button>
                             
-                            <a href="{{ route('user.template') }}" 
+                            <a href="{{ route('teacher-banji-subject.template') }}" 
                                class="btn btn-outline-primary">
                                 <i class="fas fa-file-download"></i> 下载模板
                             </a>
 
-                           
+                            <a href="{{ route('teacher-banji-subjects.index') }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> 返回列表
+                            </a>
                         </div>
                     </form>
                 </div>
