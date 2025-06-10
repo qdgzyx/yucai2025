@@ -17,8 +17,18 @@ class TeacherBanjiSubjectController extends Controller
     // 显示所有关联记录
     public function index() 
     {
-        $relations = TeacherBanjiSubject::with(['user', 'subject', 'banji'])->paginate(10);
-        return view('teacher_banji_subjects.index', compact('relations'));
+        $banjis = Banji::with('grade')->get(); // 获取所有班级数据
+        
+        $query = TeacherBanjiSubject::with(['user', 'subject', 'banji']);
+        
+        // 添加班级筛选条件
+        if (request()->has('banji_filter') && request('banji_filter')) {
+            $query->where('banji_id', request('banji_filter'));
+        }
+        
+        $relations = $query->paginate(10);
+        
+        return view('teacher_banji_subjects.index', compact('relations', 'banjis'));
     }
 
     // 显示创建表单

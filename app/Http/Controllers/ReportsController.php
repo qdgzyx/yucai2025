@@ -36,8 +36,9 @@ class ReportsController extends Controller
 	// }
 	public function create(Report $report)
 	{
-    $currentBanji = Auth::user()->banji; // 获取当前用户关联的班级
-  
+    // 修改为通过班级表的 user_id 字段查询当前用户管理的班级
+    $currentBanji = Banji::where('user_id', Auth::id())->first();
+
     return view('reports.create_and_edit', [ 
 		'report' => new Report(),
         'banjis' => Banji::all(),
