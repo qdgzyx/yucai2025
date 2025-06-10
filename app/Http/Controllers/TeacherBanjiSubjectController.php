@@ -5,6 +5,12 @@ use App\Models\Subject;
 use App\Models\Banji;
 use App\Models\User;
 use Illuminate\Http\Request;
+// 新增 Excel 门面引用
+use Maatwebsite\Excel\Facades\Excel;
+// 新增 Semester 模型引用
+use App\Models\Semester;
+// 新增导入类引用
+use App\Imports\TeacherBanjiSubjectImport;
 
 class TeacherBanjiSubjectController extends Controller
 {
@@ -46,15 +52,14 @@ class TeacherBanjiSubjectController extends Controller
                 }
 
                 // 保存到数据库
-                BanjiSubjectTeacher::updateOrCreate(
+                TeacherBanjiSubject::updateOrCreate( // 修正模型名称
                     [
                         'banji_id' => $banjiId,
                         'subject_id' => $subjectId,
                         'semester' => $semester
                     ],
                     [
-                        'teacher_id' => $teacherId,
-                        'semester' => $semester // 存储学期信息
+                        'teacher_id' => $teacherId
                     ]
                 );
             }
@@ -65,14 +70,15 @@ class TeacherBanjiSubjectController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'import_file' => 'required|mimes:xlsx,csv',
+            'file' => 'required|mimes:xlsx,csv',
         ]);
         
-        // 改为使用Semester模型获取当前学期
-        $semester = Semester::current()->value;
-        Excel::import(new TeacherBanjiSubjectImport($semester), $request->file('import_file'));
-        
-        return back()->with('success', '批量导入成功');
+        try {
+            Excel::import(new TeacherBanjiSubjectImport(), $request->file('file'));
+            return back()->with('success', '导入成功！');
+        } catch (\Exception $e) {
+            return back()->with('error', '导入失败: '.$e->getMessage());
+        }
     }
 
     public function downloadTemplate()

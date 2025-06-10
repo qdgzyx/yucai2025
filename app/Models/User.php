@@ -35,7 +35,8 @@ class User extends Authenticatable
         $this->laravelNotify($instance);
     }
      
-    protected $fillable = ['name','email','password','introduction','avatar' ];
+    protected $fillable = [
+        'name','email','password','introduction','avatar','subject_id','banji_id',];
 
     /**
      * The attributes that should be hidden for serialization.

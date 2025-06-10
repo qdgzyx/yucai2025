@@ -11,6 +11,8 @@ use App\Imports\UsersImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\UserRequest;
 use App\Handlers\ImageUploadHandler;
+use Illuminate\Validation\ValidationException;
+
 class UsersController extends Controller
 {
     public function __construct()
@@ -57,9 +59,14 @@ class UsersController extends Controller
     {
         $request->validate(['file' => 'required|mimes:xlsx,xls,csv']);
 
-        Excel::import(new UsersImport, $request->file('file'));
-
-        return back()->with('success', '数据导入成功！');
+        try {
+            Excel::import(new UsersImport, $request->file('file'));
+            return back()->with('success', '数据导入成功！');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', '导入失败: ' . $e->getMessage());
+        }
     }
     public function teachingSchedule(User $user)
     {

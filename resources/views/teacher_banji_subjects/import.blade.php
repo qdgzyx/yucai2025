@@ -10,6 +10,20 @@
                 </div>
 
                 <div class="card-body">
+                    <!-- 添加成功提示区块 -->
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <!-- 添加错误提示区块 -->
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i> 支持格式：XLSX/CSV，文件需包含班级、学科、教师列
                     </div>

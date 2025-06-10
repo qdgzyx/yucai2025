@@ -14,6 +14,22 @@
                         <i class="fas fa-info-circle"></i> 支持格式：XLSX/CSV，文件需包含完整用户信息
                     </div>
 
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if(session('errors'))
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach(session('errors')->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     @if (session('success'))
                         <div class="alert alert-success">
                             {{ session('success') }}

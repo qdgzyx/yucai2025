@@ -12,45 +12,47 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class TeacherBanjiSubjectImport implements ToModel, WithHeadingRow
 {
-    protected $semester;
-
-    // 修改为直接使用Semester模型
-    public function __construct(string $semester = null)
-    {
-        $this->semester = $semester ?? Semester::current()->value;
-    }
-
     public function model(array $row)
     {
+        // 新增列名校验
+        $requiredColumns = ['subject', 'banji', 'teacher'];
+        foreach ($requiredColumns as $col) {
+            if (!isset($row[$col])) {
+                throw ValidationException::withMessages([
+                    $col => "模板缺少必要列，请确认使用最新模板文件。缺失列：$col"
+                ]);
+            }
+        }
+
         // 验证并获取班级
-        $banji = Banji::where('name', trim($row['班级']))->first();
+        $banji = Banji::where('name', trim($row['banji']))->first();
         if (!$banji) {
             throw ValidationException::withMessages([
-                '班级' => '班级不存在: '.$row['班级']
+                'banji' => '班级不存在: '.$row['banji']
             ]);
         }
 
-        // 验证并获取学科
-        $subject = Subject::where('name', trim($row['学科']))->first();
+        // 验证并获取学科（通过学科名称查找ID）
+        $subject = Subject::where('name', trim($row['subject']))->first();
         if (!$subject) {
             throw ValidationException::withMessages([
-                '学科' => '学科不存在: '.$row['学科']
+                'subject' => '学科不存在: '.$row['subject']
             ]);
         }
 
         // 验证并获取教师
-        $teacher = User::where('name', trim($row['教师']))->first();
+        $teacher = User::where('name', trim($row['teacher']))->first();
         if (!$teacher) {
             throw ValidationException::withMessages([
-                '教师' => '教师不存在: '.$row['教师']
+                'teacher' => '教师不存在: '.$row['teacher']
             ]);
         }
 
         return new TeacherBanjiSubject([
             'banji_id' => $banji->id,
             'subject_id' => $subject->id,
-            'teacher_id' => $teacher->id,
-            'semester' => $this->semester
+            'user_id' => $teacher->id
+           
         ]);
     }
 }

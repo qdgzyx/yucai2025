@@ -12,10 +12,9 @@
       <div class="card shadow-sm">
         <div class="card-body">
           {{-- 优化标题区域 --}}
-          <div class="text-center mb-4">
-            <h1 class="display-5 fw-bold text-primary mb-3">
-              {{ $topic->title }}
-            </h1>
+           <h1 class="text-center mt-3 mb-3">
+            {{ $topic->title }}
+          </h1>
             <div class="d-flex justify-content-center align-items-center text-muted">
               <span class="me-3">
                 <i class="fas fa-user-circle me-1"></i>{{ $topic->user->name }}
@@ -23,15 +22,13 @@
               <span class="me-3">
                 <i class="fas fa-clock me-1"></i>{{ $topic->created_at->diffForHumans() }}
               </span>
-              <span>
-                <i class="fas fa-comments me-1"></i>{{ $topic->reply_count }} 条回复
-              </span>
+             
             </div>
             <hr class="w-25 mx-auto my-4">
           </div>
 
           {{-- 优化正文样式 --}}
-          <div class="topic-body fs-5 lh-base text-gray-800">
+           <div class="topic-body mt-4 mb-4">
             {!! $topic->body !!}
           </div>
 
