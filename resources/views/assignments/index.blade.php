@@ -20,7 +20,7 @@
                 <th>学科</th> <th>内容</th> <th>附件</th> <th>布置老师</th> <th>布置时间</th> <th>截止时间</th>
                 <th>审核状态</th>
                 <th>审核操作</th>
-                <th class="text-xs-right">OPTIONS</th>
+                
               </tr>
             </thead>
 
@@ -30,22 +30,22 @@
                 <td class="text-xs-center"><strong>{{$assignment->id}}</strong></td>
 
                 <td>{{$assignment->subject->name ?? ''}}</td>
-                <td>{{ Str::limit($assignment->content, 20) }}</td>
+                <td>{!! $assignment->content !!}</td>
                 <td>
                   @if($assignment->attachment)
                   <a href="{{ asset('storage/'.$assignment->attachment) }}" download>下载</a>
                   @endif
                 </td>
-                <td>{{$assignment->teacher->name ?? ''}}</td>
+                <td>{{$assignment->user->name ?? ''}}</td>
                 <td>{{$assignment->publish_at}}</td>
                 <td>{{$assignment->deadline}}</td>
                 <td>
                   @if($assignment->status === 'pending')
-                    <span class="badge badge-warning">待审核</span>
+                    <span class="btn btn-sm btn-outline-info">待审核</span>
                   @elseif($assignment->status === 'approved')
-                    <span class="badge badge-success">已通过</span>
+                    <span class="btn btn-sm btn-outline-success">已通过</span>
                   @else
-                    <span class="badge badge-danger">已驳回</span>
+                    <span class="btn btn-sm btn-outline-danger">已驳回</span>
                   @endif
                 </td>
                 <td>
@@ -72,22 +72,7 @@
                   @endcan
                 </td>
 
-                <td class="text-xs-right">
-                  <a class="btn btn-sm btn-primary" href="{{ route('assignments.show', $assignment->id) }}">
-                    V
-                  </a>
-
-                  <a class="btn btn-sm btn-warning" href="{{ route('assignments.edit', $assignment->id) }}">
-                    E
-                  </a>
-
-                  <form action="{{ route('assignments.destroy', $assignment->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Delete? Are you sure?');">
-                    {{csrf_field()}}
-                    <input type="hidden" name="_method" value="DELETE">
-
-                    <button type="submit" class="btn btn-sm btn-danger">D </button>
-                  </form>
-                </td>
+                
               </tr>
               @endforeach
             </tbody>

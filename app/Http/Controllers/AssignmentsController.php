@@ -1,13 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Subject;
-use App\Models\Banji;
+
+
 use App\Models\Assignment;
+use App\Models\Banji;
+use App\Models\Subject;
+
+
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\AssignmentRequest;
+use Illuminate\Support\Facades\Auth;  // 修正Auth类的引入方式
 
 class AssignmentsController extends Controller
 {
@@ -93,7 +96,7 @@ public function show(Banji $banji, Request $request)
 
     return view('banjis.assignmentshow', [
         'banji' => $banji,
-		'banjiId'=>$banjiId,
+        'banjiId'=>$banjiId,
         'date' => $date,
         'groupedAssignments' => $assignments
     ]);
@@ -141,4 +144,36 @@ public function show(Banji $banji, Request $request)
 
 		return redirect()->route('assignments.index')->with('message', 'Deleted successfully.');
 	}
+
+    public function approve(Assignment $assignment, Request $request)
+    {
+        // 添加数据库事务保障数据一致性
+        \DB::transaction(function () use ($assignment, $request) {
+            $assignment->update([
+                'status' => 'approved',
+                // 'approval_type' => $request->input('type', 'group'), // 修正参数获取方式
+                'approval_time' => now(), // 新增审批时间字段
+                'reject_reason' => null // 清空驳回原因
+            ]);
+        });
+    
+        return back()->with('success', '作业已通过审核');
+    }
+
+    public function reject(Assignment $assignment, Request $request)
+    {
+        
+
+        \DB::transaction(function () use ($assignment, $request) {
+            $assignment->update([
+                'status' => 'rejected',
+                // 'approval_type' => $request->input('type', 'group'),
+                // 'reject_reason' => $request->input('reason'),
+                'approval_time' => now(), // 新增驳回时间字段
+                'reject_reason' => null // 清空驳回原因
+            ]);
+        });
+
+        return back()->with('error', '作业已驳回');
+    }
 }

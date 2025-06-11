@@ -44,15 +44,17 @@ return array(
             'roles',
             'permissions',
         ],
-        '出勤管理' => [
+        '基本管理' => [
+            'academics',
+            'semesters',
             'grades',
-            'banjis',
-            'reports',
+            'banjis',            
         ],
         '内容管理' => [
             'categories',
             'topics',
             'replies',
+            'reports',
         ],
         '站点管理' => [
             'settings.site',

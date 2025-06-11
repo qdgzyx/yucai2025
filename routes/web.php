@@ -68,12 +68,14 @@ Route::post('/user/import', [App\Http\Controllers\UsersController::class, 'impor
 
 Route::resource('subjects', 'SubjectsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('assignments', 'AssignmentsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
+Route::post('assignments/{assignment}/approve', [App\Http\Controllers\AssignmentsController::class, 'approve'])->name('assignments.approve');
+Route::post('assignments/{assignment}/reject', [App\Http\Controllers\AssignmentsController::class, 'reject'])->name('assignments.reject');
 
 // 带日期参数的班级作业展示路由
 Route::get('/banji/{banji}/assignments', [App\Http\Controllers\AssignmentsController::class, 'show'])
      ->name('banjis.assignments')->middleware('auth');
 
-Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class)
+Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class, ['only' => ['index', 'create', 'store', 'update', 'edit', 'destroy']])
      ->middleware('auth');
 
 // 新增导入路由
@@ -81,6 +83,9 @@ Route::get('/teacher-banji-subject/import', [App\Http\Controllers\TeacherBanjiSu
 Route::post('/teacher-banji-subject/import', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'import'])->middleware('auth');
 
 Route::get('/teacher-banji-subject/template', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'downloadTemplate'])->name('teacher-banji-subject.template');
+Route::get('/teacher-banji-subjects/department-schedule', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'departmentSchedule'])->name('teacher-banji-subjects.department-schedule');
+Route::get('/teacher-banji-subjects/export', [TeacherBanjiSubjectController::class, 'export'])->name('teacher-banji-subjects.export');
+
 Route::get('/banji/template', [App\Http\Controllers\BanjisController::class, 'downloadTemplate'])->name('banji.template');
 Route::resource('academics', 'AcademicsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
 Route::resource('semesters', 'SemestersController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);

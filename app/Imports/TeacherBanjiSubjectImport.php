@@ -12,6 +12,11 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class TeacherBanjiSubjectImport implements ToModel, WithHeadingRow
 {
+    public function __construct()
+    {
+        $this->semesterId = Semester::current()->id;
+    }
+
     public function model(array $row)
     {
         // 新增列名校验
@@ -51,8 +56,8 @@ class TeacherBanjiSubjectImport implements ToModel, WithHeadingRow
         return new TeacherBanjiSubject([
             'banji_id' => $banji->id,
             'subject_id' => $subject->id,
-            'user_id' => $teacher->id
-           
+            'user_id' => $teacher->id,
+            'semester_id' => $this->semesterId // 新增学期ID字段
         ]);
     }
 }

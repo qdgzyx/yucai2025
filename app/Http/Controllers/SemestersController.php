@@ -14,15 +14,27 @@ class SemestersController extends Controller
     {
         $this->middleware('auth', ['except' => ['index', 'show']]);
     }
+    public function index(): View
+    {
+        $semesters = Semester::orderBy('start_date', 'desc')->paginate(10);
+        return view('semesters.index', compact('semesters'));
+
+    }
 
     public function create(): View
+{
+    $this->authorize('create', Semester::class);
+    
+    return view('semesters.create_and_edit', [
+        'semester' => new Semester(),
+        'academics' => Academic::select('id', 'name')
+            ->orderBy('name')
+            ->get()
+    ]);
+}
+    public function show(Semester $semester): View
     {
-        $this->authorize('create', Semester::class);
-        
-        return view('semesters.create_and_edit', [
-            'semester' => new Semester(),
-            'academics' => Academic::select('id', 'name')->orderBy('name')->get()
-        ]);
+        return view('semesters.show', compact('semester')); 
     }
 
     public function store(SemesterRequest $request): RedirectResponse

@@ -48,13 +48,13 @@
 
                 <div class="mb-3">
                     <label for="start_date-field">开始日期</label>
-                    <input class="form-control" type="date" name="start_date" id="start_date-field" value="{{ old('start_date', $semester->start_date ? $semester->start_date->format('Y-m-d') : '') }}" />
-                </div> 
+                    <input class="form-control" type="date" name="start_date" id="start_date-field" value="{{ old('start_date', $semester->start_date ? (is_string($semester->start_date) ? \Carbon\Carbon::parse($semester->start_date)->format('Y-m-d') : $semester->start_date->format('Y-m-d')) : '') }}" />
+                </div>
 
                 <div class="mb-3">
                     <label for="end_date-field">结束日期</label>
-                    <input class="form-control" type="date" name="end_date" id="end_date-field" value="{{ old('end_date', $semester->end_date ? $semester->end_date->format('Y-m-d') : '') }}" />
-                </div> 
+                    <input class="form-control" type="date" name="end_date" id="end_date-field" value="{{ old('end_date', $semester->end_date ? (is_string($semester->end_date) ? \Carbon\Carbon::parse($semester->end_date)->format('Y-m-d') : $semester->end_date->format('Y-m-d')) : '') }}" />
+                </div>
 
                 <div class="mb-3">
                     <label for="is_current-field">是否当前学期</label>

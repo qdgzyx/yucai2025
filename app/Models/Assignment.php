@@ -8,7 +8,7 @@ class Assignment extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['subject_id', 'content', 'attachment', 'user_id', 'publish_at', 'deadline'];
+    protected $fillable = ['subject_id', 'content', 'attachment', 'user_id', 'publish_at', 'deadline','status','reject_reason','approval_time','rejected_at','approval_type','director_id'];
    
     protected $dates = ['publish_at','deadline'];
    
