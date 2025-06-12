@@ -22,7 +22,8 @@
               <span class="me-3">
                 <i class="fas fa-clock me-1"></i>{{ $topic->created_at->diffForHumans() }}
               </span>
-             
+              ⋅
+              {{ $topic->visits()->count() }} 阅读
             </div>
             <hr class="w-25 mx-auto my-4">
           </div>

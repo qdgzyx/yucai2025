@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "awssat/laravel-visits": "^6.2",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.11",
         "laravel/framework": "^9.11",
@@ -20,6 +21,7 @@
         "spatie/laravel-permission": "^6.18",
         "summerblue/administrator": "9.*",
         "summerblue/laravel-active": "9.*",
+        "torann/geoip": "^3.0",
         "viacreative/sudo-su": "^1.1"
     },
     "require-dev": {

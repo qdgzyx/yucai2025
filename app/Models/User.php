@@ -60,6 +60,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Topic::class);
     }
+
+    // 新增作业关联关系
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
     public function isAuthorOf($model)
     {
         return $this->id == $model->user_id;
