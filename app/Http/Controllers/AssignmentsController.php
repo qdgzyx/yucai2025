@@ -93,7 +93,7 @@ public function show(Banji $banji, Request $request)
         ->orderBy('subject_id')
         ->get()
         ->groupBy('subject.name');
-
+    
     return view('banjis.assignmentshow', [
         'banji' => $banji,
         'banjiId'=>$banjiId,

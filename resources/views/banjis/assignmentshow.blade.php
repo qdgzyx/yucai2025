@@ -8,7 +8,7 @@
             <div class="text-center flex-grow-1">
                 <h3 class="mb-0 text-dark" style="font-weight: 600; letter-spacing: 1px;">
                     <i class="bi bi-journal-bookmark me-2" style="color: #6c757d;"></i>
-                    {{ $banji->name }}作业清单
+                    {{ $banji->name }}作业清单 
                 </h3>
                 <small class="text-muted">【{{ $date }}】</small>
             </div>

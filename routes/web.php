@@ -100,9 +100,30 @@ Route::get('quantify/display', [\App\Http\Controllers\QuantifyDisplayController:
 
 Route::get('quantify/semester-report', [\App\Http\Controllers\QuantifyReportController::class, 'semesterReport'])
     ->name('quantify.semester_report');
+
+    // 调整小组量化路由到认证保护组内
+    Route::get('/group-quantifications', [\App\Http\Controllers\GroupQuantificationController::class, 'index'])
+        ->name('group_quantifications.index');
+    Route::get('/group-quantifications/create', [\App\Http\Controllers\GroupQuantificationController::class, 'create'])
+        ->name('group_quantifications.create');
+    Route::post('/group-quantifications', [\App\Http\Controllers\GroupQuantificationController::class, 'store'])
+        ->name('group_quantifications.store');
+
 Route::get('/user/teaching-schedule', [\App\Http\Controllers\UsersController::class, 'teachingSchedule'])
      ->name('users.teaching-schedule');
 
+Route::resource('group-basic-infos', '\App\Http\Controllers\GroupBasicInfoController')->middleware('auth');
+Route::get('/group-basic-info/import', [\App\Http\Controllers\GroupBasicInfoController::class, 'showForm'])
+         ->name('group-basic-infos.import');
+    Route::post('/group-basic-info/import', [\App\Http\Controllers\GroupBasicInfoController::class, 'import'])
+         ->middleware('auth');
+    
+    // 新增小组量化项目路由
+    Route::resource('group_quantify_items', 'GroupQuantifyItemsController');
+    
+    // 新增小组量化公示路由
+    Route::get('/group-quantify/display', [\App\Http\Controllers\GroupQuantificationController::class, 'groupDisplay'])
+         ->name('group_quantify.display');
 });
 Auth::routes();
 

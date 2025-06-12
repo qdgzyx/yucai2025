@@ -36,7 +36,8 @@ class User extends Authenticatable
     }
      
     protected $fillable = [
-        'name','email','password','introduction','avatar','subject_id','banji_id',];
+        'name','email','password','introduction','avatar','subject_id','banji_id'
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -104,15 +105,14 @@ class User extends Authenticatable
         $this->attributes['avatar'] = $path;
     }
     // 在 User 模型中
+    public function banji()
+    {
+        return $this->belongsTo(Banji::class);
+    }
     
     public function getLastActivedAtAttribute($value)
     {
           return $value ?? $this->created_at;
-    }
-    
-    public function banji() 
-    {
-        return $this->belongsTo(Banji::class, 'banji_id'); 
     }
     
     public function taughtSubjects() {
