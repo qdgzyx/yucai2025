@@ -70,7 +70,7 @@ class AssignmentsController extends Controller
         ]) + ['user_id' => auth()->id()]);
 
         $assignment->banjis()->attach($request->banji_ids); // 关联多个班级
-        return redirect()->route('assignments.show', $assignment);
+        return redirect()->route('assignments.index', $assignment);
     }
 
     // 班级作业展示页面

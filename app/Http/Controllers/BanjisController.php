@@ -1,8 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Subject;
 use App\Models\Banji;
+use App\Models\Topic;
+use App\Models\Assignment;
+use App\Models\Record; // 添加: 引入 Record 模型
+use App\Models\GroupQuantification;
+use App\Models\GroupBasicInfo;
 use Illuminate\Http\Request;
 use App\Imports\BanjisImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -25,7 +31,24 @@ class BanjisController extends Controller
 
     public function show(Banji $banji)
     {
-        return view('banjis.show', compact('banji'));
+        // 获取日期参数或使用当前日期作为默认值
+        $date = request('date', now()->toDateString());
+        
+        // 获取当前班级的通知公告数据
+        $topics = Topic::where('category_id', 2)->paginate(5);
+        
+        // 修改：获取当前班级在指定日期当天的作业并按学科分组
+        $assignments = $banji->assignments()
+            ->with(['subject', 'user'])
+            ->whereDate('publish_at', $date)   // 只获取指定日期的作业
+            ->latest()
+            ->take(5)
+            ->get();
+        
+        // 新增：按学科名称分组作业
+        $groupedAssignments = $assignments->groupBy('subject.name');
+        
+        return view('banji.show', compact('banji', 'topics', 'assignments', 'date', 'groupedAssignments'));
     }
     
     public function assignmentshow(Banji $banji) { 

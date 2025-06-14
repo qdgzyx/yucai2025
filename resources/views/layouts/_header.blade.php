@@ -12,7 +12,8 @@
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav flex-grow-1">
                 <li class="nav-item {{ active_class(if_route('reports.index')) }}"><a class="nav-link" href="{{ route('reports.index') }}">数据汇总</a></li>
-                <li class="nav-item {{ active_class(if_route('quantify.display')) }}"><a class="nav-link" href="{{ route('quantify.display') }}">量化公示</a></li>
+                 <li class="nav-item {{ active_class(if_route('group_quantify.display')) }}"><a class="nav-link" href="{{ route('group_quantify.display') }}">小组量化</a></li>
+                <li class="nav-item {{ active_class(if_route('quantify.display')) }}"><a class="nav-link" href="{{ route('quantify.display') }}">班级量化</a></li>
                 <li class="nav-item {{ category_nav_active([1,2,3]) }} dropdown">
                     <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         学生出勤

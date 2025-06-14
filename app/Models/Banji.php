@@ -21,10 +21,6 @@ class Banji extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    // public function users()
-    // {
-    // return $this->hasMany(User::class, 'banji_id');
-    // }
 
     public function attendances()
     {
@@ -37,5 +33,16 @@ class Banji extends Model
     
     public function subjects() {
         return $this->belongsToMany(Subject::class);
+    }
+
+    public function topics()
+    {
+        return $this->hasMany(Topic::class);
+    }
+
+    // 新增：班级量化记录关联关系
+    public function quantifyRecords()
+    {
+        return $this->hasMany(QuantifyRecord::class);
     }
 }
