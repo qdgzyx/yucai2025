@@ -67,4 +67,8 @@
     .table tbody tr td:last-child {
         padding-right: 0; /* 右侧单元格去除右侧内边距 */
     }
+    /* 移除表格顶部的多余间距 */
+    .table thead tr:first-child th {
+        padding-top: 0;
+    }
 </style>

@@ -45,4 +45,12 @@ class Banji extends Model
     {
         return $this->hasMany(QuantifyRecord::class);
     }
+
+    /**
+     * 获取班级关联的出勤报告
+     */
+    public function reports()
+    {
+        return $this->hasMany(\App\Models\Report::class);
+    }
 }

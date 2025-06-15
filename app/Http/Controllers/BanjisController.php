@@ -9,6 +9,7 @@ use App\Models\Assignment;
 use App\Models\Record; // 添加: 引入 Record 模型
 use App\Models\GroupQuantification;
 use App\Models\GroupBasicInfo;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Imports\BanjisImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -47,8 +48,13 @@ class BanjisController extends Controller
         
         // 新增：按学科名称分组作业
         $groupedAssignments = $assignments->groupBy('subject.name');
+
+        $reports = $banji->reports()
+        ->with('banji') // 预加载班级信息
+        ->whereDate('date', $date) // 仅获取当日数据
+        ->get();
         
-        return view('banji.show', compact('banji', 'topics', 'assignments', 'date', 'groupedAssignments'));
+        return view('banji.show', compact('banji', 'topics', 'assignments', 'date', 'groupedAssignments','reports'));
     }
     
     public function assignmentshow(Banji $banji) { 
