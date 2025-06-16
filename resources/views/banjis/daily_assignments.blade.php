@@ -6,8 +6,8 @@
                 <thead class="bg-gradient text-white" style="background: linear-gradient(135deg, #10b981, #059669);">
                     <tr>
                         <th style="width:15%" class="py-3"><i class="fas fa-book-reader me-2"></i> 学科</th>
-                        <th style="width:55%" class="py-3"><i class="fas fa-file-alt me-2"></i> 作业内容</th>
-                        <th class="text-center" style="width:15%"><i class="fas fa-clock me-2"></i> 截止时间</th>
+                        <th style="width:50%" class="py-3"><i class="fas fa-file-alt me-2"></i> 作业内容</th>
+                        <th class="text-center" style="width:20%"><i class="fas fa-clock me-2"></i> 截止时间</th>
                         <th class="text-center" style="width:15%"><i class="fas fa-chalkboard-teacher me-2"></i> 教师</th>
                     </tr>
                 </thead>
@@ -44,14 +44,18 @@
                                 </span>
                             </td>
                             <td class="text-center align-middle">
-                                {{-- 教师名称添加头像展示 --}}
-                                <div class="d-flex flex-column align-items-center">
-                                    <img src="{{ $assignment->user->avatar ?? asset('images/default-avatar.png') }}" 
-                                         class="rounded-circle me-2" 
-                                         width="24" height="24" 
-                                         alt="头像">
-                                    <span class="text-muted small" title="{{ $assignment->user->name }}">{{ Str::limit($assignment->user->name, 8) }}</span>
-                                </div>
+                                {{-- 修改：添加空值判断 --}}
+                                @if($assignment->user)
+                                    <div class="d-flex flex-column align-items-center">
+                                        <img src="{{ $assignment->user->avatar ?? asset('images/default-avatar.png') }}" 
+                                             class="rounded-circle me-2" 
+                                             width="24" height="24" 
+                                             alt="头像">
+                                        <span class="text-muted small" title="{{ $assignment->user->name }}">{{ Str::limit($assignment->user->name, 8) }}</span>
+                                    </div>
+                                @else
+                                    <span class="text-muted small">未分配</span>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

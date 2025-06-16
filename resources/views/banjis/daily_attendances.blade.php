@@ -23,10 +23,19 @@
                             <td class="fw-bold fs-5">{{ $report->total_expected }}</td>
                             <td class="fw-bold fs-5">{{ $report->total_actual }}</td>
                             <td><span class="badge bg-info-subtle text-info">{{ $report->sick_leave_count }}</span></td>
-                            {{-- 添加文本省略与悬浮提示 --}}
-                            <td title="{{ $report->sick_list }}">{{ Str::limit($report->sick_list, 15) }}</td>
+                            {{-- 修改：添加换行显示名单 --}}
+                            <td title="{{ $report->sick_list }}">
+                                <div style="max-height: 3em; overflow: hidden;">
+                                    {{ Str::limit(str_replace(',', "\n", $report->sick_list), 30) }}
+                                </div>
+                            </td>
                             <td><span class="badge bg-warning-subtle text-warning">{{ $report->personal_leave_count }}</span></td>
-                            <td title="{{ $report->personal_list }}">{{ Str::limit($report->personal_list, 15) }}</td>
+                            {{-- 修改：添加换行显示名单 --}}
+                            <td title="{{ $report->personal_list }}">
+                                <div style="max-height: 3em; overflow: hidden;">
+                                    {{ Str::limit(str_replace(',', "\n", $report->personal_list), 30) }}
+                                </div>
+                            </td>
                             <td><span class="badge bg-danger-subtle text-danger">{{ $report->absent_count }}</span></td>
                             <td>
                                 {{-- 状态标签优化 --}}
