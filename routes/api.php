@@ -14,8 +14,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// 将需要认证的路由移入此分组
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    
+    // 添加认证保护的量化路由
+    Route::get('/banjigroup/{banji}/quantify-today', [\App\Http\Controllers\BanjisController::class, 'quantifyToday']);
 });
 
 Route::get('/banjis', function (Request $request) {

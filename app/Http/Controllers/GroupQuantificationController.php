@@ -20,8 +20,8 @@ class GroupQuantificationController extends Controller
 
     public function create()
     {
-        // 获取当前用户所属班级ID（根据用户模型关联调整）
-        $banjiId = auth()->user()->banji_id; 
+        // 通过访问器直接获取班级ID
+        $banjiId = auth()->user()->banji_id;
         
         // 根据班级ID获取对应小组
         $groups = GroupBasicInfo::with('banji')
@@ -37,9 +37,9 @@ class GroupQuantificationController extends Controller
     // 在store方法中添加班级验证
     public function store(Request $request)
     {
-        // 获取当前用户班级ID
+        // 通过访问器获取班级ID
         $userBanjiId = auth()->user()->banji_id;
-
+    
         $validated = $request->validate([
             'quantification.content' => 'required',
             'quantification.time' => 'required|date',

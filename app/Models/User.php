@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 use Spatie\Permission\Traits\HasRoles;
-class User extends Authenticatable 
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory,HasRoles;
     use Traits\ActiveUserHelper;
@@ -124,5 +124,14 @@ class User extends Authenticatable
     public function quantifyRecords()
     {
         return $this->hasMany(QuantifyRecord::class);
+    }
+
+    /**
+     * 获取用户所属的班级ID
+     */
+    public function getBanjiIdAttribute()
+    {
+        return \App\Models\Banji::where('user_id', $this->id)
+            ->value('id') ?? null;
     }
 }

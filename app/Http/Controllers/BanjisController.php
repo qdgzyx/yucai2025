@@ -8,7 +8,7 @@ use App\Models\Topic;
 use App\Models\Assignment;
 use App\Models\Record; // 添加: 引入 Record 模型
 use App\Models\GroupQuantification;
-use App\Models\GroupBasicInfo;
+use App\Models\GroupBasicInfo; // 确保引入GroupBasicInfo模型
 use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Imports\BanjisImport;
@@ -50,11 +50,22 @@ class BanjisController extends Controller
         $groupedAssignments = $assignments->groupBy('subject.name');
 
         $reports = $banji->reports()
-        ->with('banji') // 预加载班级信息
-        ->whereDate('date', $date) // 仅获取当日数据
+        ->with('banji') 
+        ->whereDate('date', $date) 
         ->get();
         
-        return view('banji.show', compact('banji', 'topics', 'assignments', 'date', 'groupedAssignments','reports'));
+        // 修改：使用正确的关联方法 groupQuantifications()
+        $groupScores = $this->getGroupScoresForBanji($banji);
+
+        return view('banji.show', compact(
+            'banji', 
+            'topics', 
+            'assignments', 
+            'date', 
+            'groupedAssignments',
+            'reports',
+            'groupScores'
+        ));
     }
     
     public function assignmentshow(Banji $banji) { 
@@ -87,4 +98,23 @@ class BanjisController extends Controller
 		$teachers = \App\Models\User::all(); // 获取所有用户作为教师列表
 		return view('banjis.create_and_edit', compact('banji', 'grades', 'teachers'));
 	}
+
+    private function getGroupScoresForBanji(Banji $banji)
+    {
+        return GroupBasicInfo::leftJoin('group_quantifications', function ($join) {
+                $join->on('group_basic_infos.id', '=', 'group_quantifications.group_basic_info_id')
+                     ->whereDate('group_quantifications.time', now());
+            })
+            ->where('group_basic_infos.banji_id', $banji->id)  // 确保使用正确的banji_id字段过滤
+            ->selectRaw('group_basic_infos.id as group_basic_info_id, COALESCE(SUM(group_quantifications.score), 0) as total_score')
+            ->groupBy('group_basic_info_id')
+            ->get()
+            ->map(function ($record) {
+                $groupInfo = GroupBasicInfo::find($record->group_basic_info_id);
+                return [
+                    'group_name' => $groupInfo->name,
+                    'total_score' => (int)$record->total_score
+                ];
+            });
+    }
 }

@@ -40,10 +40,10 @@ class Banji extends Model
         return $this->hasMany(Topic::class);
     }
 
-    // 新增：班级量化记录关联关系
-    public function quantifyRecords()
+    // 新增: 通过GroupBasicInfo关联到量化记录
+    public function groupBasicInfos()
     {
-        return $this->hasMany(QuantifyRecord::class);
+        return $this->hasMany(GroupBasicInfo::class);
     }
 
     /**

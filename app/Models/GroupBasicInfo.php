@@ -16,8 +16,9 @@ class GroupBasicInfo extends Model
         'members'
     ];
 
+    // 在GroupBasicInfo模型中添加到Banji的关联
     public function banji()
     {
-        return $this->belongsTo(Banji::class);
+        return $this->belongsTo(Banji::class, 'banji_id');
     }
 }

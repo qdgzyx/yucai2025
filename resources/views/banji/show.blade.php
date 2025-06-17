@@ -205,112 +205,82 @@
 <!-- 引入Chart.js库 -->
 <script src="{{ asset('js/chart.min.js') }}"></script>
 <script>
-    // 添加资源加载完成检测
     window.addEventListener('load', function() {
-        console.log('Window load 事件触发');
+        const ctx = document.getElementById('groupQuantifyChart');
         
-        // 使用延迟执行确保元素存在
-        setTimeout(() => {
-            // 增加Chart.js可用性检测
-            if (typeof Chart === 'undefined') {
-                console.error('Chart.js未正确加载');
-                const diag = document.createElement('div');
-                diag.className = 'alert alert-danger';
-                diag.innerHTML = '<strong>图表库加载失败</strong><br>请检查：<ul>'+
-                    '<li>网络连接状态</li>'+
-                    '<li>CND资源可用性</li>'+
-                    '<li>浏览器控制台错误信息</li></ul>';
-                document.body.appendChild(diag);
-                return;
-            }
+        // 增强错误处理
+        if (!ctx || !ctx.getContext) {
+            showErrorMessage('图表容器初始化失败');
+            return;
+        }
+
+        // 使用内嵌数据初始化图表
+        function initChart() {
+            // 从PHP传递的变量获取数据
+            const data = @json($groupScores);
             
-            const ctx = document.getElementById('groupQuantifyChart');
-            
-            // 添加元素存在性双重验证
-            if (!ctx || !ctx.getContext) {
-                console.error('图表容器无效或不存在');
-                // 创建诊断元素
-                const diag = document.createElement('div');
-                diag.className = 'alert alert-warning';
-                diag.innerHTML = '<strong>图表容器异常</strong><br>可能原因：<ul>'+
-                    '<li>DOM未正确加载</li>'+
-                    '<li>CSS选择器冲突</li>'+
-                    '<li>脚本加载时机过早</li></ul>';
-                document.body.appendChild(diag);
+            if (!data || data.length === 0) {
+                showErrorMessage('暂无今日量化数据');
                 return;
             }
 
-            console.log('开始初始化图表，Canvas尺寸:', ctx.width, 'x', ctx.height);
-            
-            // 强制设置尺寸
-            ctx.width = 600;
-            ctx.height = 400;
-            
-            // 验证数据生成
-            const groups = Array.from({length: 9}, (_, i) => '小组' + (i+1));
-            const scores = Array.from({length: 9}, () => Math.floor(Math.random() * 100));
-            console.log('生成数据:', {groups, scores});
+            const groups = data.map(item => item.group_name);
+            const scores = data.map(item => item.total_score);
 
-            try {
-                // 创建图表配置
-                const config = {
-                    type: 'bar',
-                    data: {
-                        labels: groups,
-                        datasets: [{
-                            label: '量化分数',
-                            data: scores,
-                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            title: {
-                                display: true,
-                                text: '小组量化情况',
-                                font: { size: 16 }
-                            }
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: groups,
+                    datasets: [{
+                        label: '今日量化分数',
+                        data: scores,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: '各小组今日量化分数合计',
+                            font: { size: 16 }
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: { display: true, text: '分数' }
-                            },
-                            x: {
-                                title: { display: true, text: '小组' }
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `分数: ${ctx.raw}`
                             }
                         }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '分数' }
+                        },
+                        x: {
+                            title: { display: true, text: '小组' }
+                        }
                     }
-                };
+                }
+            });
+        }
 
-                // 尝试创建图表实例
-                const myChart = new Chart(ctx.getContext('2d'), config);
-                console.log('图表实例创建成功:', myChart);
-                
-                // 添加图表状态检查定时器
-                setInterval(() => {
-                    if (myChart.ctx.canvas.width === 0) {
-                        console.warn('检测到图表容器尺寸异常归零');
-                    }
-                }, 2000);
-                
-            } catch (chartError) {
-                console.error('图表初始化失败:', chartError);
-                // 显示详细错误
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'alert alert-danger';
-                errorDiv.innerHTML = `
-                    <h6>图表初始化失败</h6>
-                    <pre>${chartError.stack}</pre>
-                `;
-                ctx.parentNode.appendChild(errorDiv);
-            }
-        }, 2000); // 延迟2秒执行
+        // 执行初始化
+        try {
+            initChart();
+        } catch (error) {
+            console.error('图表初始化失败:', error);
+            showErrorMessage('图表渲染失败');
+        }
+
+        function showErrorMessage(msg) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger mt-3';
+            alert.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${msg}`;
+            ctx.parentNode.appendChild(alert);
+        }
     });
 </script>
 @endsection

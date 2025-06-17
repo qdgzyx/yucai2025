@@ -24,11 +24,7 @@ class GroupQuantification extends Model
         'time' => 'datetime'
     ];
 
-    public function banji()
-    {
-        return $this->belongsTo(Banji::class);
-    }
-
+    // 修改: 通过group_basic_info_id关联到GroupBasicInfo
     public function groupBasicInfo()
     {
         return $this->belongsTo(GroupBasicInfo::class, 'group_basic_info_id');
