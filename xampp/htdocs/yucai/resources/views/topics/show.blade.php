@@ -36,20 +36,47 @@
             {!! $topic->body !!}
           </div>
 
-          
+          {{-- 操作区域 - 增加微交互动效 --}}
+          @can('update', $topic)
+            <div class="mt-5 pt-4 border-top">
+              <div class="d-flex gap-3 justify-content-end">
+                <a href="{{ route('topics.edit', $topic->id) }}" 
+                   class="btn btn-outline-primary btn-lg px-4 rounded-pill d-flex align-items-center gap-2"
+                   style="transition: transform 0.2s;">
+                  <i class="far fa-edit"></i>
+                  <span>编辑文章</span>
+                </a>
+                <form action="{{ route('topics.destroy', $topic->id) }}" method="post">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" 
+                          class="btn btn-danger btn-lg px-4 rounded-pill d-flex align-items-center gap-2"
+                          style="transition: transform 0.2s;"
+                          onclick="return confirm('确定要删除吗？')">
+                    <i class="far fa-trash-alt"></i>
+                    <span>删除文章</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          @endcan
         </div>
       </div>
 
-      
+      {{-- 回复区域 - 增加折叠动画效果 --}}
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+          @includeWhen(Auth::check(), 'topics._reply_box', ['topic' => $topic])
+          @include('topics._reply_list', ['replies' => $topic->replies()->with('user')->get()])
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-
 <style>
 .bg-gradient {
-    background: linear-gradient(135deg, #1e40af, #1e3a8a) !important; /* 增加 !important 提高优先级 */
-    color: white !important; /* 确保标题文本颜色为白色 */
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
 }
 
 .prose {
@@ -81,5 +108,4 @@
     box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.5);
 }
 </style>
-
 @endsection

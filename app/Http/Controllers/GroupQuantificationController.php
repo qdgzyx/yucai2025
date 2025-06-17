@@ -150,6 +150,18 @@ class GroupQuantificationController extends Controller
             }
         }
 
+        // 新增：计算小组排名（按总分降序）
+        $rank = 1;
+        $sortedGroups = collect($groupQuantifyData)
+            ->sortByDesc('total')
+            ->map(function ($item) use (&$rank) {
+                $item['rank'] = $rank++;
+                return $item;
+            });
+
+        // 将排序后的数据重新索引为数字键
+        $groupQuantifyData = array_values($sortedGroups->toArray());
+
         return view('group_quantify.display', [
             'banjis' => $banjis,
             'selectedBanjiId' => $selectedBanjiId,
@@ -157,7 +169,7 @@ class GroupQuantificationController extends Controller
             'dateRange' => $dateRange,
             'quantifyItems' => $quantifyItems,
             'filteredGrades' => $filteredGrades,
-            'groupQuantifyData' => $groupQuantifyData,
+            'groupQuantifyData' => $groupQuantifyData, // 确保传递更新后的数据
         ]);
     }
 }

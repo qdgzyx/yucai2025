@@ -66,8 +66,8 @@
                     </thead>
                     
                     <tbody>
-                        {{-- 直接遍历小组数据 --}}
-                        @foreach($groupQuantifyData as $groupId => $row)
+                        {{-- 修改视图中的遍历逻辑以匹配新的数组结构 --}}
+                        @foreach($groupQuantifyData as $row)
                             <tr>
                                 <td>{{ $row['group']->name }} ({{ $row['group']->banji->name ?? '' }})</td>
                                 
