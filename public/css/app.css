@@ -1,6 +1,5 @@
-@charset "UTF-8";
 @import url(https://fonts.bunny.net/css?family=Nunito);
-
+@charset "UTF-8";
 /*!
  * Bootstrap  v5.3.6 (https://getbootstrap.com/)
  * Copyright 2011-2025 The Bootstrap Authors
@@ -22891,4 +22890,16 @@ body {
   margin: 0.4em auto 0.6em;
   font-size: 28px;
   line-height: 38px;
+}
+
+/* 消息通知 */
+.notification-badge .badge {
+  font-size: 12px;
+  margin-top: 14px;
+}
+.notification-badge .badge-secondary {
+  background-color: #EBE8E8 !important;
+}
+.notification-badge .badge-hint {
+  background-color: #d15b47 !important;
 }

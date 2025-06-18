@@ -108,7 +108,7 @@ Route::get('quantify/semester-report', [\App\Http\Controllers\QuantifyReportCont
         ->name('group_quantifications.create');
     Route::post('/group-quantifications', [\App\Http\Controllers\GroupQuantificationController::class, 'store'])
         ->name('group_quantifications.store');
-
+Route::resource('notifications', '\App\Http\Controllers\NotificationsController', ['only' => ['index']]);
 Route::get('/user/teaching-schedule', [\App\Http\Controllers\UsersController::class, 'teachingSchedule'])
      ->name('users.teaching-schedule');
 
