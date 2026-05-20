@@ -26,8 +26,13 @@ class UsersController extends Controller
     public function edit(User $user)
     {
         $this->authorize('update', $user);
-        $banjis = Banji::all();
-        $subjects = Subject::all();
+        // 优化：使用缓存和字段选择
+        $banjis = cache()->remember('banjis_id_name', 3600, function () {
+            return Banji::select('id', 'name')->get();
+        });
+        $subjects = cache()->remember('subjects_id_name', 3600, function () {
+            return Subject::select('id', 'name')->get();
+        });
         return view('users.edit', compact('user', 'banjis', 'subjects'));
     }
     // public function update(UserRequest $request, User $user)
@@ -70,8 +75,13 @@ class UsersController extends Controller
     }
     public function teachingSchedule(User $user)
     {
-    $banjis = Banji::with('teacherBanjiSubjects.teacher')->get();
-    $subjects = Subject::all();
+    // 优化：添加字段选择和预加载
+    $banjis = Banji::with(['teacherBanjiSubjects.user:id,name', 'teacherBanjiSubjects.subject:id,name'])
+        ->select('id', 'name', 'grade_id')
+        ->get();
+    $subjects = cache()->remember('subjects_list', 3600, function () {
+        return Subject::select('id', 'name')->get();
+    });
     return view('users.teaching_schedule', compact('user', 'banjis', 'subjects'));
     }
     // 需要确保存在此方法

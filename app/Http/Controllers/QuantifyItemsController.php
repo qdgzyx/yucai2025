@@ -9,6 +9,7 @@ use App\Models\Semester;
 use App\Models\QuantifyType;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log; // 新增：导入 Log Facade
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuantifyItemRequest;
 

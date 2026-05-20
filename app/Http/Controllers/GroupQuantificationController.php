@@ -14,7 +14,10 @@ class GroupQuantificationController extends Controller
 {
     public function index()
     {
-        $quantifications = GroupQuantification::with('groupBasicInfo')->get();
+        // 优化：添加分页和必要的关联预加载
+        $quantifications = GroupQuantification::with('groupBasicInfo:id,name,banji_id')
+            ->orderBy('time', 'desc')
+            ->paginate(20);
         return view('group_quantifications.index', compact('quantifications'));
     }
 
@@ -23,13 +26,16 @@ class GroupQuantificationController extends Controller
         // 通过访问器直接获取班级ID
         $banjiId = auth()->user()->banji_id;
         
-        // 根据班级ID获取对应小组
-        $groups = GroupBasicInfo::with('banji')
+        // 根据班级ID获取对应小组（优化：只选择需要的字段）
+        $groups = GroupBasicInfo::select('id', 'name', 'banji_id')
               ->where('banji_id', $banjiId)
+              ->with('banji:id,name') // 优化：预加载并限制字段
               ->get();
               
-        // 获取所有量化项目
-        $quantifyItems = GroupQuantifyItem::all();
+        // 获取所有量化项目（优化：缓存结果）
+        $quantifyItems = cache()->remember('group_quantify_items_all', 3600, function () {
+            return GroupQuantifyItem::all();
+        });
               
         return view('group_quantifications.create', compact('groups', 'quantifyItems'));
     }
@@ -67,8 +73,10 @@ class GroupQuantificationController extends Controller
     // 修改小组量化公示页面展示方法
     public function groupDisplay(Request $request)
     {
-        // 获取所有班级列表
-        $banjis = Banji::all();
+        // 获取所有班级列表（优化：缓存并只选择需要的字段）
+        $banjis = cache()->remember('banjis_list', 3600, function () {
+            return Banji::select('id', 'name', 'grade_id')->get();
+        });
         
         // 获取选中的班级ID
         $selectedBanjiId = $request->input('banji_id', $banjis->first()->id ?? null);
@@ -98,16 +106,19 @@ class GroupQuantificationController extends Controller
                 $dateRange = [Carbon::now(), Carbon::now()->endOfDay()];
         }
         
-        // 修改：使用GroupQuantifyItem替换QuantifyItem
-        $quantifyItems = GroupQuantifyItem::all()->groupBy('type');
+        // 修改：使用GroupQuantifyItem替换QuantifyItem（优化：缓存结果）
+        $quantifyItems = cache()->remember('group_quantify_items_grouped_by_type', 3600, function () {
+            return GroupQuantifyItem::all()->groupBy('type');
+        });
         
         // 添加 filteredGrades 变量定义
         // 获取所有班级的年级信息（假设 Banji 模型有 grade 属性）
-        $filteredGrades = Banji::all();
+        $filteredGrades = $banjis; // 复用已查询的班级数据
         
-        // 获取选定班级的小组数据
-        $groups = GroupBasicInfo::with('banji')
+        // 获取选定班级的小组数据（优化：预加载关联并限制字段）
+        $groups = GroupBasicInfo::select('id', 'name', 'banji_id')
             ->where('banji_id', $selectedBanjiId)
+            ->with('banji:id,name')
             ->get();
 
         // 初始化小组量化数据
@@ -129,8 +140,9 @@ class GroupQuantificationController extends Controller
             ];
         }
 
-        // 查询选定日期范围内的量化记录
-        $records = GroupQuantification::whereBetween('time', $dateRange)
+        // 查询选定日期范围内的量化记录（优化：只选择需要的字段）
+        $records = GroupQuantification::select('id', 'group_basic_info_id', 'content', 'score', 'time')
+            ->whereBetween('time', $dateRange)
             ->whereIn('group_basic_info_id', $groups->pluck('id'))
             ->get();
 

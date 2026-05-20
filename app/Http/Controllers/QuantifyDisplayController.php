@@ -12,16 +12,21 @@ class QuantifyDisplayController extends Controller
 {
     public function index(Request $request)
     {
-        // 获取当前学期
-        $currentSemester = Semester::active()->first();
+        // 获取当前学期（优化：缓存）
+        $currentSemester = cache()->remember('current_semester', 3600, function () {
+            return Semester::active()->first();
+        });
         
-        // 修改：移除过滤条件，始终获取全部年级
+        // 修改：移除过滤条件，始终获取全部年级（优化：字段选择和缓存）
         $selectedGradeId = $request->input('grade_id');
-        $grades = Grade::with(['banjis' => function($query) {
-                $query->orderBy('id');
-            }])
-            ->orderByRaw("CAST(name AS UNSIGNED)")
-            ->get();
+        $grades = cache()->remember('grades_with_banjis', 3600, function () {
+            return Grade::with(['banjis' => function($query) {
+                    $query->select('id', 'name', 'grade_id')->orderBy('id');
+                }])
+                ->select('id', 'name')
+                ->orderByRaw("CAST(name AS UNSIGNED)")
+                ->get();
+        });
 
         // 修改：优先使用请求中的grade_id，没有时使用第一个年级的ID
         $selectedGradeId = $selectedGradeId ?? ($grades->first()->id ?? null);
@@ -36,8 +41,9 @@ class QuantifyDisplayController extends Controller
         // 获取日期范围
         $dateRange = $this->getDateRange($periodType, $request);
         
-        // 获取量化项目
+        // 获取量化项目（优化：字段选择）
         $quantifyItems = $currentSemester->quantifyItems()
+            ->select('id', 'name', 'type', 'score', 'status', 'semester_id')
             ->where('status', true)
             ->orderBy('id')
             ->get()

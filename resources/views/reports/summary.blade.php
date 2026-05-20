@@ -26,7 +26,7 @@
             <input type="date" 
                    name="date" 
                    class="form-control"
-                   value="{{ $selectedDate ?? $today }}"
+                   value="{{ $selectedDate ?? now()->toDateString() }}"
                    max="{{ now()->toDateString() }}"
                    style="width: 160px">
             <div class="input-group-append">
@@ -55,9 +55,10 @@
           </thead>
           
           <tbody>
-            @foreach($allBanji as $class) <!-- 修改：移除视图中的排序逻辑 -->
+            @foreach($allBanji as $class)
             @php
-            $submitted = $banjis->firstWhere('banji.id', $class->id);
+            // 优化：使用更简洁的方式查找已提交的报告
+            $submitted = $banjis->firstWhere('banji_id', $class->id);
             @endphp
             <tr style="background-color: {{ $submitted ? '#dff0d8' : '#fcf8e3' }}">
               <td>{{ $class->name }}</td>
@@ -67,7 +68,7 @@
               <td>
                 @isset($submitted->sick_list)
                   @foreach(explode(',', $submitted->sick_list) as $list)
-                    {{ $list }}<br>
+                    {{ trim($list) }}<br>
                   @endforeach
                 @else
                   -
@@ -77,7 +78,7 @@
               <td>
                 @isset($submitted->personal_list)
                   @foreach(explode(',', $submitted->personal_list) as $list)
-                    {{ $list }}<br>
+                    {{ trim($list) }}<br>
                   @endforeach
                 @else
                   -
@@ -103,8 +104,7 @@
         </table>
 
         <div class="mt-3">
-          <a href="{{ route('reports.export.grade', ['grade' => $grade_id,
-    'date' => $selectedDate ?? $today]) }}" class="btn btn-secondary">
+          <a href="{{ route('reports.export.grade', ['grade' => $grade_id, 'date' => $selectedDate ?? now()->toDateString()]) }}" class="btn btn-secondary">
             <i class="fas fa-file-excel"></i> 导出{{ $currentGrade }}Excel
           </a>
         </div>
@@ -145,10 +145,10 @@ new Chart(document.getElementById('attendanceChart'), {
     datasets: [{
       label: '实到人数',
       data: {!! $allBanji->map(function($class) use ($banjis) {
-        return $banjis->firstWhere('banji.id', $class->id)->total_actual ?? 0;
+        return $banjis->firstWhere('banji_id', $class->id)?->total_actual ?? 0;
       })->toJson() !!},
       backgroundColor: {!! $allBanji->map(function($class) use ($banjis) {
-        return $banjis->firstWhere('banji.id', $class->id) 
+        return $banjis->firstWhere('banji_id', $class->id) 
           ? 'rgba(75, 192, 192, 0.6)'
           : 'rgba(255, 206, 86, 0.6)';
       })->toJson() !!}
@@ -172,13 +172,11 @@ new Chart(document.getElementById('attendanceChart'), {
 });
 </script>
 <style>
-<style>
 /* 优化样式表 */
 .bg-success-light { background-color: #dff0d8 !important; }
 .bg-warning-light { background-color: #fcf8e3 !important; }
 .table-responsive { min-height: 400px; }
 #attendanceChart { border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-</style>
 </style>
 @endsection
 @endsection

@@ -21,9 +21,12 @@ class TeacherBanjiSubjectController extends Controller
     // 显示所有关联记录
     public function index() 
     {
-        $banjis = Banji::with('grade')->get(); // 获取所有班级数据
+        // 优化：缓存班级列表并只选择需要的字段
+        $banjis = cache()->remember('banjis_with_grades', 3600, function () {
+            return Banji::select('id', 'name', 'grade_id')->with('grade:id,name')->get();
+        });
         
-        $query = TeacherBanjiSubject::with(['user', 'subject', 'banji']);
+        $query = TeacherBanjiSubject::with(['user:id,name', 'subject:id,name', 'banji:id,name,grade_id']);
         
         // 添加班级筛选条件
         if (request()->has('banji_filter') && request('banji_filter')) {
@@ -38,10 +41,17 @@ class TeacherBanjiSubjectController extends Controller
     // 显示创建表单
     public function create()
     {
-        $teachers = User::all();
-        $subjects = Subject::all();
-        // 修改为获取当前年级全部班级（示例取七年级）
-        $banjis = Banji::where('grade_id', '1')->get();
+        // 优化：使用缓存和字段选择
+        $teachers = cache()->remember('users_id_name', 3600, function () {
+            return User::select('id', 'name')->get();
+        });
+        $subjects = cache()->remember('subjects_id_name', 3600, function () {
+            return Subject::select('id', 'name')->get();
+        });
+        // 修改为获取当前年级全部班级（示例取七年级）（优化：字段选择）
+        $banjis = Banji::select('id', 'name', 'grade_id')
+            ->where('grade_id', '1')
+            ->get();
         return view('teacher_banji_subjects.create', compact('teachers', 'subjects', 'banjis'));
     }
 
@@ -116,24 +126,30 @@ class TeacherBanjiSubjectController extends Controller
             return back()->withErrors(['semester_filter' => '无效的学期选择']);
         }
 
-        // 修改查询逻辑添加学期存在性检查
-        $query = TeacherBanjiSubject::with(['user', 'subject', 'banji'])
+        // 修改查询逻辑添加学期存在性检查（优化：字段选择和预加载）
+        $query = TeacherBanjiSubject::with([
+                'user:id,name', 
+                'subject:id,name', 
+                'banji:id,name,grade_id'
+            ])
+            ->select('id', 'user_id', 'subject_id', 'banji_id', 'semester_id')
             ->when($selectedSemester, function ($query, $semester) {
                 return $query->where('semester_id', $semester);
             });
 
-        // 获取所有学期
-        $semesters = Semester::all();
+        // 获取所有学期（优化：缓存）
+        $semesters = cache()->remember('semesters_list', 3600, function () {
+            return Semester::select('id', 'name')->get();
+        });
 
-        // 获取所有级部（假设有一个 Grade 模型）
-        $grades = Grade::all();
+        // 获取所有级部（假设有一个 Grade 模型）（优化：缓存）
+        $grades = cache()->remember('grades_list', 3600, function () {
+            return Grade::select('id', 'name')->get();
+        });
 
         // 当前选择的学期和级部
         $selectedSemester = $request->input('semester_filter');
         $selectedGrade = $request->input('grade_filter');
-
-        // 查询教师安排
-        $query = TeacherBanjiSubject::with(['user', 'subject', 'banji']);
 
         // 根据学期筛选
         if ($selectedSemester) {
@@ -149,29 +165,47 @@ class TeacherBanjiSubjectController extends Controller
 
         $schedules = $query->get();
 
-        // 获取所有学科
-        $subjects = Subject::all();
+        // 获取所有学科（优化：缓存）
+        $subjects = cache()->remember('subjects_list', 3600, function () {
+            return Subject::select('id', 'name')->get();
+        });
 
-        // 获取所有班级（根据选中的级部过滤）
-        $banjis = Banji::when($selectedGrade, function ($query, $grade) {
-            $query->where('grade_id', $grade);
-        })->get();
+        // 获取所有班级（根据选中的级部过滤）（优化：字段选择）
+        $banjis = Banji::select('id', 'name', 'grade_id')
+            ->when($selectedGrade, function ($query, $grade) {
+                $query->where('grade_id', $grade);
+            })
+            ->get();
 
-        return view('teacher_banji_subjects.department_teacher_schedule', compact('semesters', 'grades', 'schedules', 'selectedSemester', 'selectedGrade', 'subjects', 'banjis'));
-}
+        return view('teacher_banji_subjects.department_teacher_schedule', compact(
+            'semesters', 
+            'grades', 
+            'schedules', 
+            'selectedSemester', 
+            'selectedGrade', 
+            'subjects', 
+            'banjis'
+        ));
+    }
 
 
     // 添加导出 Excel 的方法
     public function export()
     {
-        // 获取当前学期ID
-        $currentSemester = Semester::current()->id;
+        // 获取当前学期ID（优化：缓存）
+        $currentSemester = cache()->remember('current_semester_id', 3600, function () {
+            return Semester::current()->id;
+        });
 
-        // 查询数据并传递给导出类
-        $schedules = TeacherBanjiSubject::with(['banji', 'subject', 'user'])
+        // 查询数据并传递给导出类（优化：字段选择和预加载）
+        $schedules = TeacherBanjiSubject::with([
+                'banji:id,name,grade_id', 
+                'subject:id,name', 
+                'user:id,name'
+            ])
+            ->select('id', 'banji_id', 'subject_id', 'user_id', 'semester_id')
             ->where('semester_id', $currentSemester)
             ->get();
 
         return Excel::download(new TeacherBanjiSubjectExport($schedules), '教师班级学科关联.xlsx');
     }
-}

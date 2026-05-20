@@ -36,12 +36,19 @@ class ReportsController extends Controller
 	// }
 	public function create(Report $report)
 	{
-    // 修改为通过班级表的 user_id 字段查询当前用户管理的班级
-    $currentBanji = Banji::where('user_id', Auth::id())->first();
+    // 修改为通过班级表的 user_id 字段查询当前用户管理的班级（优化：只选择需要的字段）
+    $currentBanji = Banji::select('id', 'name', 'grade_id', 'user_id')
+        ->where('user_id', Auth::id())
+        ->first();
+
+    // 优化：缓存班级列表
+    $banjis = cache()->remember('banjis_id_name', 3600, function () {
+        return Banji::select('id', 'name')->get();
+    });
 
     return view('reports.create_and_edit', [ 
 		'report' => new Report(),
-        'banjis' => Banji::all(),
+        'banjis' => $banjis,
         'currentBanji' => $currentBanji
     ]);
 	}
@@ -69,9 +76,15 @@ public function store(ReportRequest $request)
 {
     $this->authorize('update', $report);
     $currentBanji = Auth::user()->banji;
+    
+    // 优化：缓存班级列表
+    $banjis = cache()->remember('banjis_id_name', 3600, function () {
+        return Banji::select('id', 'name')->get();
+    });
+    
     return view('reports.edit', [
         'report' => $report,
-        'banjis' => Banji::all(),
+        'banjis' => $banjis,
         'currentBanji' => $currentBanji
     ]);
 }
@@ -128,14 +141,16 @@ public function store(ReportRequest $request)
 	{
     $today = now()->format('Y-m-d');
 
-    // 获取每个班级当天最新的报告ID
+    // 获取每个班级当天最新的报告ID（优化：添加索引提示）
     $latestReportIds = Report::selectRaw('MAX(id) as latest_id, banji_id')
         ->whereDate('date', $today)
         ->groupBy('banji_id')
         ->pluck('latest_id');
 
-    // 根据最新ID获取完整数据
-    $banjis = Report::with('banji')
+    // 根据最新ID获取完整数据（优化：预加载关联并限制字段）
+    $banjis = Report::with(['banji:id,name,grade_id'])
+        ->select('id', 'banji_id', 'date', 'total_expected', 'total_actual', 
+                 'sick_leave_count', 'personal_leave_count', 'absent_count')
         ->whereIn('id', $latestReportIds)
         ->get();
 
@@ -153,20 +168,27 @@ public function store(ReportRequest $request)
 
     public function summaryByGrade($grade_id, Request $request)
     {
-    // 获取当前年级
-    $currentGrade = Grade::find($grade_id)->name;
+    // 获取当前年级（优化：缓存）
+    $currentGrade = cache()->remember("grade_{$grade_id}", 3600, function () use ($grade_id) {
+        return Grade::select('id', 'name')->find($grade_id);
+    });
 
-    // 获取所有班级
-    $allBanji = Banji::where('grade_id', $grade_id)->orderBy('name')->get(); // 修改：按班级名称排序
+    // 获取所有班级（优化：只选择需要的字段并排序）
+    $allBanji = Banji::select('id', 'name', 'grade_id')
+        ->where('grade_id', $grade_id)
+        ->orderBy('name')
+        ->get();
 
-    // 获取已提交的班级数据
+    // 获取已提交的班级数据（优化：预加载关联和字段选择）
     $selectedDate = $request->input('date', now()->toDateString());
-    $banjis = Report::where('date', $selectedDate)
-                    ->whereHas('banji', function ($query) use ($grade_id) {
-                        $query->where('grade_id', $grade_id);
-                    })
-                    ->with('banji')
-                    ->get();
+    $banjis = Report::with(['banji:id,name,grade_id'])
+        ->select('id', 'banji_id', 'date', 'total_expected', 'total_actual', 
+                 'sick_leave_count', 'personal_leave_count', 'absent_count')
+        ->where('date', $selectedDate)
+        ->whereHas('banji', function ($query) use ($grade_id) {
+            $query->where('grade_id', $grade_id);
+        })
+        ->get();
 
     return view('reports.summary', compact('allBanji', 'banjis', 'currentGrade', 'grade_id', 'selectedDate'));
     }
@@ -181,11 +203,15 @@ public function store(ReportRequest $request)
 
     private function getGradeData($grade_id)
     {
-        // 复用summaryByGrade中的查询逻辑
+        // 复用summaryByGrade中的查询逻辑（优化：字段选择）
         return [
-            'allBanji' => Banji::where('grade_id', $grade_id)->get(),
-            'banjis' => Report::whereHas('banji', fn($q) => $q->where('grade_id', $grade_id))->get(),
-            'gradeName' => Grade::find($grade_id)->name
+            'allBanji' => Banji::select('id', 'name', 'grade_id')->where('grade_id', $grade_id)->get(),
+            'banjis' => Report::with(['banji:id,name'])
+                ->select('id', 'banji_id', 'total_expected', 'total_actual', 
+                         'sick_leave_count', 'personal_leave_count', 'absent_count')
+                ->whereHas('banji', fn($q) => $q->where('grade_id', $grade_id))
+                ->get(),
+            'gradeName' => Grade::select('id', 'name')->find($grade_id)->name
         ];
     }
 

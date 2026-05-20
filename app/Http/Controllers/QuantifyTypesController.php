@@ -54,7 +54,7 @@ class QuantifyTypesController extends Controller
                 'quantify_type' => new QuantifyType()
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to load create page: ' . $e->getMessage());
+            Log::error('Failed to load create page: ' . $e->getMessage());
             return back()->withError('Failed to load page. Please try again.');
         }
     }

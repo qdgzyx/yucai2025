@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TeacherBanjiSubjectController; // 新增：导入控制器
 
 Route::get('/', 'ReportsController@create')->name('root');
 
@@ -61,9 +62,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ->name('reports.export.grade');
     });
 Route::get('/banji/import', [App\Http\Controllers\BanjisController::class, 'showForm'])->name('banji.import');
-Route::post('/banji/import', [App\Http\Controllers\BanjisController::class, 'import'])->middleware('auth');;
+Route::post('/banji/import', [App\Http\Controllers\BanjisController::class, 'import'])->middleware('auth'); // 修复：移除双分号
 Route::get('/user/import', [App\Http\Controllers\UsersController::class, 'showForm'])->name('user.import');
-Route::post('/user/import', [App\Http\Controllers\UsersController::class, 'import'])->middleware('auth');;
+Route::post('/user/import', [App\Http\Controllers\UsersController::class, 'import'])->middleware('auth'); // 修复：移除双分号
 
 
 Route::resource('subjects', 'SubjectsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
@@ -75,16 +76,16 @@ Route::post('assignments/{assignment}/reject', [App\Http\Controllers\Assignments
 Route::get('/banji/{banji}/assignments', [App\Http\Controllers\AssignmentsController::class, 'show'])
      ->name('banjis.assignments')->middleware('auth');
 
-Route::resource('teacher-banji-subjects', App\Http\Controllers\TeacherBanjiSubjectController::class, ['only' => ['index', 'create', 'store', 'update', 'edit', 'destroy']])
+Route::resource('teacher-banji-subjects', TeacherBanjiSubjectController::class, ['only' => ['index', 'create', 'store', 'update', 'edit', 'destroy']]) // 修复：使用已导入的类
      ->middleware('auth');
 
 // 新增导入路由
-Route::get('/teacher-banji-subject/import', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'showForm'])->name('teacher-banji-subject.import');
-Route::post('/teacher-banji-subject/import', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'import'])->middleware('auth');
+Route::get('/teacher-banji-subject/import', [TeacherBanjiSubjectController::class, 'showForm'])->name('teacher-banji-subject.import');
+Route::post('/teacher-banji-subject/import', [TeacherBanjiSubjectController::class, 'import'])->middleware('auth');
 
-Route::get('/teacher-banji-subject/template', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'downloadTemplate'])->name('teacher-banji-subject.template');
-Route::get('/teacher-banji-subjects/department-schedule', [App\Http\Controllers\TeacherBanjiSubjectController::class, 'departmentSchedule'])->name('teacher-banji-subjects.department-schedule');
-Route::get('/teacher-banji-subjects/export', [TeacherBanjiSubjectController::class, 'export'])->name('teacher-banji-subjects.export');
+Route::get('/teacher-banji-subject/template', [TeacherBanjiSubjectController::class, 'downloadTemplate'])->name('teacher-banji-subject.template');
+Route::get('/teacher-banji-subjects/department-schedule', [TeacherBanjiSubjectController::class, 'departmentSchedule'])->name('teacher-banji-subjects.department-schedule');
+Route::get('/teacher-banji-subjects/export', [TeacherBanjiSubjectController::class, 'export'])->name('teacher-banji-subjects.export'); // 修复：使用已导入的类
 
 Route::get('/banji/template', [App\Http\Controllers\BanjisController::class, 'downloadTemplate'])->name('banji.template');
 Route::resource('academics', 'AcademicsController', ['only' => ['index', 'show', 'create', 'store', 'update', 'edit', 'destroy']]);
@@ -108,7 +109,7 @@ Route::get('quantify/semester-report', [\App\Http\Controllers\QuantifyReportCont
         ->name('group_quantifications.create');
     Route::post('/group-quantifications', [\App\Http\Controllers\GroupQuantificationController::class, 'store'])
         ->name('group_quantifications.store');
-Route::resource('notifications', '\App\Http\Controllers\NotificationsController', ['only' => ['index']]);
+// 删除重复的 notifications 路由定义
 Route::get('/user/teaching-schedule', [\App\Http\Controllers\UsersController::class, 'teachingSchedule'])
      ->name('users.teaching-schedule');
 

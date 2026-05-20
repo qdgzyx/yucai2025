@@ -18,17 +18,22 @@
                             <!-- 左侧表单区域 -->
                             <div class="col-md-8">
                                 <!-- 学科选择 -->
-                                <select id="subject_id" name="subject_id" required>
+                                <div class="mb-3">
+                                    <strong class="form-label text-secondary d-block mb-2">
+                                        <i class="bi bi-book me-1"></i>选择学科 <span class="text-danger">*</span>
+                                    </strong>
+                                    <select id="subject_id" name="subject_id" class="form-select" required>
                                         @foreach($teacher->taughtSubjects->unique('id') as $subject)
-                                      <option value="{{ $subject->id }}">{{ $subject->name }}</option>
-                                           @endforeach
-                                </select>
+                                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
                                 <!-- Simditor 编辑器容器 -->
                                 <div class="mb-4">
-                                    <label class="form-label text-secondary">
+                                    <strong class="form-label text-secondary d-block mb-2">
                                         <i class="bi bi-pencil-square me-1"></i>作业内容 <span class="text-danger">*</span>
-                                    </label>
+                                    </strong>
                                     <textarea name="content" id="editor" class="form-control" rows="8">
                                         {{ old('content') }}
                                     </textarea>
@@ -36,9 +41,9 @@
 
                                 <!-- 附件上传 -->
                                 <div class="mb-4">
-                                    <label class="form-label text-secondary">
+                                    <strong class="form-label text-secondary d-block mb-2">
                                         <i class="bi bi-paperclip me-1"></i>添加附件
-                                    </label>
+                                    </strong>
                                     <input type="file" name="attachment" 
                                            class="form-control" 
                                            accept=".pdf,.doc,.docx,.zip">
@@ -50,9 +55,9 @@
                             <div class="col-md-4">
                                 <!-- 时间选择 -->
                                 <div class="mb-4">
-                                    <label class="form-label text-secondary">
+                                    <strong class="form-label text-secondary d-block mb-2">
                                         <i class="bi bi-clock me-1"></i>时间设置 <span class="text-danger">*</span>
-                                    </label>
+                                    </strong>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">布置时间</span>
                                         <input type="datetime-local" 
@@ -72,7 +77,7 @@
 
                             <!-- 班级选择 -->
                             <div class="mb-3">
-                                    <label>发布到班级（多选）</label>
+                                    <strong class="form-label text-secondary d-block mb-2">发布到班级（多选）</strong>
                                     <select name="banji_ids[]" multiple class="form-select" size="6">
                                         @foreach($banjis as $banji)
                                             <option value="{{ $banji->id }}">{{ $banji->name }}（{{ $banji->grade->name }}）</option>

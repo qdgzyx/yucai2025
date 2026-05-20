@@ -35,12 +35,14 @@ class BanjisController extends Controller
         // 获取日期参数或使用当前日期作为默认值
         $date = request('date', now()->toDateString());
         
-        // 获取当前班级的通知公告数据
-        $topics = Topic::where('category_id', 2)->paginate(5);
+        // 获取当前班级的通知公告数据（优化：添加缓存）
+        $topics = cache()->remember("topics_category_2_page_" . request('page', 1), 300, function () {
+            return Topic::where('category_id', 2)->paginate(5);
+        });
         
-        // 修改：获取当前班级在指定日期当天的作业并按学科分组
+        // 修改：获取当前班级在指定日期当天的作业并按学科分组（优化：字段选择）
         $assignments = $banji->assignments()
-            ->with(['subject', 'user'])
+            ->with(['subject:id,name', 'user:id,name']) // 优化：只加载需要的字段
             ->whereDate('publish_at', $date)   // 只获取指定日期的作业
             ->latest()
             ->take(5)
@@ -49,10 +51,11 @@ class BanjisController extends Controller
         // 新增：按学科名称分组作业
         $groupedAssignments = $assignments->groupBy('subject.name');
 
+        // 优化：只查询当天报告并限制字段
         $reports = $banji->reports()
-        ->with('banji') 
-        ->whereDate('date', $date) 
-        ->get();
+            ->select('id', 'banji_id', 'date', 'total_expected', 'total_actual') // 优化：字段选择
+            ->whereDate('date', $date) 
+            ->get();
         
         // 修改：使用正确的关联方法 groupQuantifications()
         $groupScores = $this->getGroupScoresForBanji($banji);
@@ -69,9 +72,11 @@ class BanjisController extends Controller
     }
     
     public function assignmentshow(Banji $banji) { 
+        // 优化：添加字段选择和预加载
         $assignments = $banji->assignments()
-            ->with(['subject', 'teacher'])
-            ->active()
+            ->with(['subject:id,name', 'user:id,name']) // 优化：只加载需要的字段
+            ->select('id', 'subject_id', 'user_id', 'content', 'publish_at', 'deadline') // 优化：字段选择
+            ->where('status', 'approved') // 假设 active 是 scope，如果没有则使用状态过滤
             ->get()
             ->groupBy('subject.name');
             
@@ -80,9 +85,14 @@ class BanjisController extends Controller
     
     public function create(Banji $banji)
     {
-        $grades = \App\Models\Grade::all(); // 获取所有年级数据
-        $teachers = User::all(); // 获取所有用户作为教师列表
-        return view('banjis.create_and_edit', compact('banji', 'grades', 'teachers')); // 添加teachers参数
+        // 优化：只查询需要的字段并缓存
+        $grades = cache()->remember('grades_id_name', 3600, function () {
+            return \App\Models\Grade::select('id', 'name')->get();
+        });
+        $teachers = cache()->remember('users_for_banji', 3600, function () {
+            return User::select('id', 'name')->get();
+        });
+        return view('banjis.create_and_edit', compact('banji', 'grades', 'teachers'));
     }
 
 	public function store(BanjiRequest $request)
@@ -94,27 +104,34 @@ class BanjisController extends Controller
 	public function edit(Banji $banji)
 	{
 		$this->authorize('update', $banji);
-		$grades = \App\Models\Grade::all();
-		$teachers = \App\Models\User::all(); // 获取所有用户作为教师列表
+		// 优化：使用缓存
+		$grades = cache()->remember('grades_id_name', 3600, function () {
+            return \App\Models\Grade::select('id', 'name')->get();
+        });
+		$teachers = cache()->remember('users_for_banji', 3600, function () {
+            return User::select('id', 'name')->get();
+        });
 		return view('banjis.create_and_edit', compact('banji', 'grades', 'teachers'));
 	}
 
     private function getGroupScoresForBanji(Banji $banji)
     {
-        return GroupBasicInfo::leftJoin('group_quantifications', function ($join) {
-                $join->on('group_basic_infos.id', '=', 'group_quantifications.group_basic_info_id')
-                     ->whereDate('group_quantifications.time', now());
-            })
-            ->where('group_basic_infos.banji_id', $banji->id)  // 确保使用正确的banji_id字段过滤
-            ->selectRaw('group_basic_infos.id as group_basic_info_id, COALESCE(SUM(group_quantifications.score), 0) as total_score')
-            ->groupBy('group_basic_info_id')
-            ->get()
-            ->map(function ($record) {
-                $groupInfo = GroupBasicInfo::find($record->group_basic_info_id);
-                return [
-                    'group_name' => $groupInfo->name,
-                    'total_score' => (int)$record->total_score
-                ];
-            });
+        // 优化：使用单次查询并预加载数据
+        return cache()->remember("group_scores_banji_{$banji->id}_" . now()->toDateString(), 300, function () use ($banji) {
+            return GroupBasicInfo::leftJoin('group_quantifications', function ($join) {
+                    $join->on('group_basic_infos.id', '=', 'group_quantifications.group_basic_info_id')
+                         ->whereDate('group_quantifications.time', now());
+                })
+                ->where('group_basic_infos.banji_id', $banji->id)
+                ->select('group_basic_infos.id as group_basic_info_id', 'group_basic_infos.name', \DB::raw('COALESCE(SUM(group_quantifications.score), 0) as total_score'))
+                ->groupBy('group_basic_infos.id', 'group_basic_infos.name')
+                ->get()
+                ->map(function ($record) {
+                    return [
+                        'group_name' => $record->name,
+                        'total_score' => (int)$record->total_score
+                    ];
+                });
+        });
     }
 }

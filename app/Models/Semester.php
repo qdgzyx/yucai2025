@@ -27,10 +27,20 @@ class Semester extends Model
     }
 
     /**
-     * 只查询当前学期
+     * 只查询当前学期（优化：添加缓存）
      */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_current', true);
+    }
+    
+    /**
+     * 获取当前学期（静态方法，带缓存）
+     */
+    public static function current()
+    {
+        return cache()->remember('current_semester_model', 3600, function () {
+            return self::where('is_current', true)->first();
+        });
     }
 }

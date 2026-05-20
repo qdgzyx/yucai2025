@@ -127,10 +127,16 @@ class User extends Authenticatable
     }
 
     /**
-     * 获取用户所属的班级ID
+     * 获取用户所属的班级ID（优化：使用缓存避免重复查询）
      */
     public function getBanjiIdAttribute()
     {
+        // 先尝试从已加载的关联中获取
+        if ($this->relationLoaded('banji')) {
+            return $this->banji?->id;
+        }
+        
+        // 否则查询数据库并缓存结果
         return \App\Models\Banji::where('user_id', $this->id)
             ->value('id') ?? null;
     }

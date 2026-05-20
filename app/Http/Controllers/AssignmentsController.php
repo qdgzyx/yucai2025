@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\Banji;
 use App\Models\Subject;
+use Illuminate\Support\Facades\Log; // 新增：导入 Log Facade
+use Illuminate\Support\Facades\DB; // 新增：导入 DB Facade
 
 
 
@@ -148,7 +150,7 @@ public function show(Banji $banji, Request $request)
     public function approve(Assignment $assignment, Request $request)
     {
         // 添加数据库事务保障数据一致性
-        \DB::transaction(function () use ($assignment, $request) {
+        DB::transaction(function () use ($assignment, $request) { // 修复：使用已导入的 DB
             $assignment->update([
                 'status' => 'approved',
                 // 'approval_type' => $request->input('type', 'group'), // 修正参数获取方式
@@ -164,7 +166,7 @@ public function show(Banji $banji, Request $request)
     {
         
 
-        \DB::transaction(function () use ($assignment, $request) {
+        DB::transaction(function () use ($assignment, $request) { // 修复：使用已导入的 DB
             $assignment->update([
                 'status' => 'rejected',
                 // 'approval_type' => $request->input('type', 'group'),
